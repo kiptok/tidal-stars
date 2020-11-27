@@ -1,53 +1,31 @@
 Song = Class{}
 
--- plays music, holds wires and draws points
-
 function Song:init(d)
 	-- points with color values
 	self.map = {} -- matrix
 	self.points = {} -- 
-	self.wires = {}
-	self.duration = d or 9999999 -- 2777.7775 hours
+	self.stars = {}
+	self.duration = d or 9999
 	self.bg = {0, 0, 0, 1}
-	self.playMode = pm
 	self:clear()
 end
 
 function Song:update(dt)
-	if self.playMode == 'play' then
-		-- add the beat point if it would be on screen
-		for k, point in pairs(beat.points) do
-			if point.x >= 0 and point.x < VIRTUAL_WIDTH and point.y >= 0 and point.y < VIRTUAL_HEIGHT then
-				self.map[point.y + 1][point.x + 1] = point
-				table.insert(self.points, point)
-			end
-		end
-
-		-- remove dead points from table
-		while not self.points[1] do
-			table.remove(self.points, 1)
-		end
-
-		-- update points
-		-- for k, row in pairs(self.map) do
-		-- 	for j, point in pairs(row) do
-		-- 		if point then
-		-- 			point:update(dt)
-		-- 		end
-		-- 	end
-		-- end
-		for k, point in pairs(self.points) do
-			if point then
-				point:update(dt)
-			end
-		end
-	elseif self.playMode == 'loop' then
-		for k, point in pairs(self.points) do
-			if point then
-				point:update(dt)
-			end
+	for k, star in pairs(self.stars) do
+		if star then
+			star:update(dt)
 		end
 	end
+
+	for k, point in pairs(self.points) do
+		if point then
+			point:update(dt)
+		end
+	end
+end
+
+function Song:fill()
+	
 end
 
 function Song:clear()
@@ -60,7 +38,6 @@ function Song:clear()
 		end
 		table.insert(self.map, row)
 	end
-	self.wires = {}
 	if math.random(2) == 1 then
 		-- day
 		self.bg = {1, 1, 1, 1}
@@ -69,7 +46,7 @@ function Song:clear()
 		self.bg = {0, 0, 0, 1}
 	end
 	love.graphics.setColor(self.bg)
-    love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
+  love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 end
 
 -- loop?

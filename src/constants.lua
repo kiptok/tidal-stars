@@ -1,20 +1,7 @@
-WINDOW_WIDTH, WINDOW_HEIGHT = 1600, 900
-VIRTUAL_WIDTH, VIRTUAL_HEIGHT = 1600, 900
+WINDOW_WIDTH, WINDOW_HEIGHT = love.window.getDimensions
+VIRTUAL_WIDTH, VIRTUAL_HEIGHT = love.window.getDimensions
 
--- VIRTUAL_WIDTH = 720
--- VIRTUAL_HEIGHT = 450
 
--- CROSS_WIDTH = 16
--- CROSS_HEIGHT = 16
-
-OX_X = 64
-OX_Y = 64
-
-XO_X = VIRTUAL_WIDTH - 64
-XO_Y = VIRTUAL_HEIGHT - 64
-
-HEART_SPEED = 15
-HEART_ACCEL = 0.5
 
 SYSTEM_ACCEL = math.pi / 1024
 MAX_RADIUS = VIRTUAL_HEIGHT / 4
@@ -25,62 +12,6 @@ MIN_ALPHA_DIFF = 0.05
 
 -- BPM = 60
 
--- HEART_POINTS = {
--- 	{6, 7, 8, 9, 10, 11},
--- 	{4, 5, 6, 7, 8, 9, 10, 11, 12, 13},
--- 	{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
--- 	{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
--- 	{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
--- 	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
--- 	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
--- 	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
--- 	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
--- 	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
--- 	{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
--- 	{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
--- 	{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15},
--- 	{3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14},
--- 	{4, 5, 6, 7, 8, 9, 10, 11, 12, 13},
--- 	{6, 7, 8, 9, 10, 11}
--- }
+MOON_RADIUS = 32
 
--- HEART_WIDTH = 16
--- HEART_HEIGHT = 16
-
-HEART_POINTS = {
-	{1, 9},
-	{2, 8},
-	{3, 7},
-	{4, 6},
-	{5},
-	{4, 6},
-	{3, 7},
-	{2, 8},
-	{1, 9}
-}
-
-HEART_WIDTH = 9
-HEART_HEIGHT = 9
-
--- HEART_POINTS = {
--- 	{1, 8},
--- 	{2, 7},
--- 	{3, 6},
--- 	{4},
--- 	{5},
--- 	{3, 6},
--- 	{2, 7},
--- 	{1, 8}
--- }
-
--- HEART_WIDTH = 8
--- HEART_HEIGHT = 8
-
--- BEAT_POINTS = {
--- 	{1, 2},
--- 	{1, 2}
--- }
-
--- BEAT_POINTS = {
--- 	{1}
--- }
+PLAYER_ACCEL
