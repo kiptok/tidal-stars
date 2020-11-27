@@ -1,0 +1,14 @@
+the moon changes color (as its 'phases')
+the stars twinkle with it
+you use the light of the moon to find stars (are you the moon?)
+kind of a rhythm game -- need a 'beat'
+incorporate scales
+
+art
+moon
+stars - procedurally generated
+playing field - gradient
+
+sounds
+twinkling
+collection sound
