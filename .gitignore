@@ -40,5 +40,5 @@ luac.out
 *.hex
 
 # Sublime
-/moonshot.sublime-project
-/moonshot.sublime-workspace
+moonshot.sublime-project
+moonshot.sublime-workspace
