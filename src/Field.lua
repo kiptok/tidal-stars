@@ -1,108 +1,88 @@
 Field = Class{}
 
-function Field:init(d)
+function Field:init(d, p, w, r)
 	-- points with color values
-	self.map = {} -- matrix
-	self.points = {} -- 
+	self.difficulty = 1
+	self.width = w or FRAME_WIDTH
+	self.period = p or LUNA_PERIOD
+	self.radius = r or LUNA_RADIUS
 	self.stars = {}
-	self.duration = d or 9999
-	self.bg = {0, 0, 0, 1}
+	self.colors = {}
+	self.moon = Moon(self.colors, self.period, self.radius)
+	self.wave = Wave(self.moon, self.colors, self.width)
+	self.duration = d or 60
+	self.bg = {1, 1, 1, 1}
 	self:clear()
+	self:fill()
 end
 
 function Field:update(dt)
+	self.moon:update(dt)
+	self.wave:update(dt)
 	for k, star in pairs(self.stars) do
 		if star then
 			star:update(dt)
 		end
 	end
 
-	for k, point in pairs(self.points) do
-		if point then
-			point:update(dt)
-		end
-	end
+
 end
 
 function Field:fill()
-	
+
+	self:makeColors()
+	self:makeStars(20)
 end
 
 function Field:clear()
-	self.map = {}
-	-- might have to change this matrix-based indexing of points to a stack?
-	for y = 1, VIRTUAL_HEIGHT do
-		local row = {}
-		for x = 1, VIRTUAL_WIDTH do
-			table.insert(row, false)
-		end
-		table.insert(self.map, row)
-	end
-	if math.random(2) == 1 then
-		-- day
-		self.bg = {1, 1, 1, 1}
-	else
-		-- night
-		self.bg = {0, 0, 0, 1}
-	end
+	self.bg = {1, 1, 1, 1}
 	love.graphics.setColor(self.bg)
-  love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
+	love.graphics.rectangle('fill',  128, 96, FRAME_WIDTH, FRAME_HEIGHT)
 end
 
--- loop?
-function Field:loop()
-	self.playMode = 'loop'
-	while not self.points[1] do
-		table.remove(self.points, 1)
-	end
-	for k, point in pairs(self.points) do
-		point.playMode = 'loop'
-	end
-end
-
-function Field:mapToMatrix()
-	local matrix = {} -- {rows{cells{values}}}
-	for k, row in pairs(self.map) do
-		local r = {}
-		for j, point in pairs(row) do
-			local cell -- x, y, r, g, b, a
-			if point then
-				cell = point:xyrgba()
-			else
-				cell = {j-1, k-1, 0, 0, 0, 1}
-			end
-			table.insert(r, cell)
+function Field:makeColors()
+	local dColor = 0
+	while dColor < 1 do
+		self.colors[1] = {math.random(), math.random(), math.random(), 1} -- 'dark'
+		self.colors[2] = {math.random(), math.random(), math.random(), 1} -- 'light'
+		for i = 1, 3 do
+			dColor = dColor + abs(self.colors[1][i] - self.colors[2][i])
 		end
-		table.insert(matrix, r)
 	end
-	return matrix
 end
 
--- for Max: return string of form 'point# x y r g b a [count] [period]'
-function Field:pointsToCells()
-	local cells = {} -- {cells{xyrgba}}
-		for k, point in pairs(self.points) do
-			table.insert(cells, point:xyrgba())
-		end
-	return cells
+function Field:makeStars(k)
+	for i = 1, k do
+		local x = math.random(self.width)
+		local y = math.random(self.height)
+		local s = math.random(STAR_SIZE_MIN, STAR_SIZE_MAX)
+		local n = math.round(math.random(s*s*0.25, s*s))
+		local c = lerpColor(self.colors[1], self.colors[2], math.random())
+		table.insert(self.stars, Star(x, y, s, n, c))
+	end
 end
+
+-- -- loop?
+-- function Field:loop()
+-- 	self.playMode = 'loop'
+-- 	while not self.points[1] do
+-- 		table.remove(self.points, 1)
+-- 	end
+-- 	for k, point in pairs(self.points) do
+-- 		point.playMode = 'loop'
+-- 	end
+-- end
 
 function Field:render()
-	for k, row in pairs(self.map) do
-		for j, point in pairs(row) do
-			if point then -- remove/unanimate point
-				if point.life > self.duration then
-					love.graphics.setColor(0, 0, 0, 1)
-					love.graphics.points(point.x, point.y)
-					point = false
-				else
-					point:render()
-				end
-			end
-		end
-	end
+	-- draw frame border - image?
 
-	for k, wire in pairs(self.wires) do
-		wire:render()
+	-- draw frame inside
+	self.bg = {1, 1, 1, 1}
+	love.graphics.rectangle('fill',  128, 96, FRAME_WIDTH, FRAME_HEIGHT)
+
+	self.wave:render()
+	for k, star in pairs(self.stars) do
+		star:render()
 	end
+	self.moon:render()
 end

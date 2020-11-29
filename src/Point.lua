@@ -25,9 +25,17 @@ function Point:init(x, y, c, a)
 end
 
 function Point:update(dt)
-	self:fade(dt)
-	self:shine(dt) -- don't think i like this
+
 end
+
+-- -- slightly adjust color
+-- function Point:twinkle(dt, r)
+-- 	local range = r
+
+-- 	for i = 1, 3 do
+-- 		self.light[i] = 
+-- 	end
+-- end
 
 -- -- fade colors
 -- function Point:fade(dt)
@@ -42,7 +50,7 @@ end
 -- 	end
 -- end
 
--- -- change colors
+-- change colors
 -- function Point:blink(s)
 -- 	local step = s
 
@@ -115,6 +123,6 @@ end
 
 -- maybe adjust for luminosity here?
 function Point:render()
-	love.graphics.setColor(self.light)
+	love.graphics.setColor({self.light[1] % 1, self.light[2] % 1, self.light[3] % 1, self.light[4]})
 	love.graphics.points(self.x, self.y)
 end

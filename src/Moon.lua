@@ -2,24 +2,14 @@ Moon = Class{}
 
 -- the heart/beat
 
-function Moon:init(x, y, w)
-	self.x = x
-	self.y = y
-	self.phase = LUNA_PERIOD/4
-	self.dp = 0
-	self.period = LUNA_PERIOD
-	self.radius = LUNA_RADIUS
-	self.colors = {
-		{
-			math.random(), math.random(), math.random(), 1
-		},
-		{
-			math.random(), math.random(), math.random(), 1
-		}
-	}
+function Moon:init(c, p, r)
+	self.period = p or LUNA_PERIOD -- time to pass through all moon phases
+	self.day = self.period * 0.25 -- start at 1/4 moon
+	self.phase = self.day / self.period
+	self.dp = 0 -- speed of change of phase
+	self.radius = r or LUNA_RADIUS -- moon size
+	self.colors = c
 	self.points = {} -- points
-	self.wave = Wave(self, self.colors[1], self.colors[2])
-	-- self.points
 	self:make()
 end
 
@@ -34,9 +24,10 @@ function Moon:update(dt)
 	if love.keyboard.wasPressed('space') then
 		self.dp = 0
 	end
+	-- make speed limits
+
 	-- maybe let these ramp up/down
 	self:phase(dt)
-	self.wave:update(dt)
 end
 
 function Moon:make() -- initialize points
@@ -66,11 +57,12 @@ function Moon:shine() -- cast light on the playing field?
 end
 
 function Moon:phase(dt) -- sweeping light/dark over the moon
-	self.phase = (self.phase + self.dp * dt) % self.period
-	local pct = self.phase % (self.period * 0.5) / (self.period * 0.5)
+	self.day = (self.day + self.dp * dt) % self.period
+	self.phase = self.day / self.period
+	local pct = self.phase * 2 % 1
 	local left = 1
 	local right = 2
-	if self.phase >= self.period*0.5 then
+	if self.phase >= 0.5 then
 		left, right = right, left
 	end
 
@@ -90,9 +82,12 @@ function Moon:phase(dt) -- sweeping light/dark over the moon
 	end
 end
 
+function Moon:getPhase()
+	return self.phase
+end
+
 function Moon:render()
 	for k, point in pairs(self.light) do
 		point:render()
 	end
-	self.wave:render()
 end

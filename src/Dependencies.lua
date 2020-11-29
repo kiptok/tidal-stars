@@ -12,14 +12,33 @@ push = require 'lib/push'
 -- https://github.com/vrld/hump/blob/master/class.lua
 Class = require 'lib/class'
 
+require 'lib/tick'
+
 lume = require 'lib/lume'
+
+-- Timer = require 'lib/knife.timer'
 
 require 'src/constants'
 
-require 'src/Wire'
-require 'src/Cross'
-require 'src/Heart'
-require 'src/Hearts'
 require 'src/Beat'
-require 'src/Song'
+require 'src/Field'
+require 'src/Moon'
+require 'src/Player'
 require 'src/Point'
+require 'src/Song'
+require 'src/Star'
+require 'src/Wave'
+
+gSounds['loop'] = {
+	[1] = love.audio.newSource('sounds/loop1.wav'),
+	[2] = love.audio.newSource('sounds/loop2.wav'),
+	[3] = love.audio.newSource('sounds/loop3.wav'),
+	[4] = love.audio.newSource('sounds/loop4.wav')
+}
+
+gSounds['star'] = {
+	[1] = love.audio.newSource('sounds/star1.wav'),
+	[2] = love.audio.newSource('sounds/star2.wav'),
+	[3] = love.audio.newSource('sounds/star3.wav'),
+	[4] = love.audio.newSource('sounds/star4.wav')
+}

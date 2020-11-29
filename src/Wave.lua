@@ -13,16 +13,22 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 _) {
 
 Wave = Class{}
 
-function Wave:init(m, c1, c2)
-	self.colors = {c1, c2}
+function Wave:init(m, c, w)
+	self.x = 0
+	self.y = 0
+	self.colors = c
 	self.shader = love.graphics.newShader('shader_code')
 	self.line = {} -- the bounding line that separates the extreme colors
-	self.width = VIRTUAL_WIDTH -- span of the wave. may grow bigger
+	self.width = w or VIRTUAL_WIDTH -- span of the wave. may grow bigger
 	self.moon = m
 end
 
 function Wave:update(dt) -- update the wave to follow the moon phase
-
+	-- get the moon phase
+	local phase = self.moon:getPhase()
+	-- adjust the position of the waves
+	
+	
 end
 
 function Wave:render()
