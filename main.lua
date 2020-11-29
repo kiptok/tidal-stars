@@ -25,7 +25,6 @@ function love.load()
 
   font = love.graphics.newFont('fonts/font.ttf', 16)
 
-  month = 29.530587981
   bpm = 120
   spb = 60 / bpm
   stars = {}
@@ -48,10 +47,6 @@ function love.load()
   love.mouse.setVisible(false)
 
   love.keyboard.keysPressed = {}
-
-
-
-
 end
 
 function love.resize(w, h)
