@@ -1,0 +1,43 @@
+the moon changes color (as its 'phases')
+the stars twinkle with it
+you use the light of the moon to find stars (are you the moon?)
+kind of a rhythm game -- need a 'beat'
+incorporate scales
+
+art
+moon
+stars - procedurally generated
+playing field - gradient
+
+sounds
+twinkling
+collection sound
+
+gameplay
+the moon phase controls the waves as they reach the shore
+the impact shoots something (a surfer? water?) upward to reach the stars
+
+design
+bordered playing field
+gradient that represents the moon phase
+e.g. the playing field is ramped in proportion to the light to dark parts
+split in the middle between base colors, then a ramp that wraps across the sides
+
+Star.lua
+the star is a collection of points
+collectible – always?
+they react to the moon & its phases
+it also has a unique sound
+
+Moon.lua
+the moon is a unique entity that affects the field
+it has phases between 2(?) colors, the balance of which creates a gradient on the field that might conceal or reveal the stars
+
+Song.lua
+the song is created by the collection of stars
+they play in sequence according to the beat
+a finished song is played back at the end
+
+Wave.lua
+the wave moves as the moon phases
+set the speed of the wave and then 'release' it
