@@ -56,31 +56,55 @@ function Moon:shine() -- cast light on the playing field?
 
 end
 
-function Moon:phase(dt) -- sweeping light/dark over the moon
+function Moon:phase(dt)
 	self.day = (self.day + self.dp * dt) % self.period
 	self.phase = self.day / self.period
-	local pct = self.phase * 2 % 1
-	local left = 1
-	local right = 2
-	if self.phase >= 0.5 then
-		left, right = right, left
+	local left = (self.phase - 0.25) % 1 -- gradient end positions
+	-- local right = (self.phase + 0.25) % 1
+	local x = self.radius
+	local pct = left
+	local increment = 0.25 / x
+	for j = -x, x do
+		self.points[0][j]:setLight(lerpColor(self.colors[1], self.colors[2], pct))
+		pct = (pct + increment) % 1
 	end
-
 	for i = 1, self.radius do
-		local maxX = math.floor(math.sqrt(self.radius*self.radius - i*i))
-		local remaining = #self.points[i]
-		for j = -maxX, maxX do
-			if (remaining / #self.points[i]) > pct then
-				self.points[i][j]:setLight(left)
-				self.points[-i][j]:setLight(left)
-			else
-				self.points[i][j]:setLight(right)
-				self.points[-i][j]:setLight(right)
-			end
-			remaining = remaining - 1
+		x = math.floor(math.sqrt(self.radius*self.radius - i*i))
+		pct = left
+		increment = 0.25 / x
+		for j = -x, x do
+			self.points[i][j]:setLight(lerpColor(self.colors[1], self.colors[2], pct))
+			self.points[-i][j]:setLight(lerpColor(self.colors[1], self.colors[2], pct))
+			pct = (pct + increment) % 1
 		end
 	end
 end
+
+-- function Moon:phase(dt) -- sweeping light/dark over the moon
+-- 	self.day = (self.day + self.dp * dt) % self.period
+-- 	self.phase = self.day / self.period
+-- 	local pct = self.phase * 2 % 1
+-- 	local left = 1
+-- 	local right = 2
+-- 	if self.phase >= 0.5 then
+-- 		left, right = right, left
+-- 	end
+
+-- 	for i = 1, self.radius do
+-- 		local maxX = math.floor(math.sqrt(self.radius*self.radius - i*i))
+-- 		local remaining = #self.points[i]
+-- 		for j = -maxX, maxX do
+-- 			if (remaining / #self.points[i]) > pct then
+-- 				self.points[i][j]:setLight(left)
+-- 				self.points[-i][j]:setLight(left)
+-- 			else
+-- 				self.points[i][j]:setLight(right)
+-- 				self.points[-i][j]:setLight(right)
+-- 			end
+-- 			remaining = remaining - 1
+-- 		end
+-- 	end
+-- end
 
 function Moon:getPhase()
 	return self.phase
