@@ -1,7 +1,7 @@
 NightMaker = Class{}
 
 function NightMaker.generate(w, d, p, r)
-	local width = w
+	local waveWidth = w
 	local difficulty = d
 	local period = p
 	local radius = r
@@ -10,32 +10,33 @@ function NightMaker.generate(w, d, p, r)
 	local stars = {}
 
 	-- difficulty-adjustable settings
-	local numStars = 20
-	local minColorDiff = 1
+	local numStars = 40
+	local minColorDiff = 1.5
 	local duration = 60
 
 	-- set colors randomly with minimum difference
 	local dColor = 0
 	while dColor < minColorDiff do
+		dColor = 0
 		colors[1] = {math.random(), math.random(), math.random(), 1} -- 'dark'
 		colors[2] = {math.random(), math.random(), math.random(), 1} -- 'light'
 		for i = 1, 3 do
-			dColor = dColor + abs(colors[1][i] - colors[2][i])
+			dColor = dColor + math.abs(colors[1][i] - colors[2][i])
 		end
 	end
 
 	-- make stars with random placement, size, density, interpolated color
 	for i = 1, numStars do
-		local x = math.random(width)
+		local x = math.random(waveWidth)
 		local y = math.random(FRAME_HEIGHT)
-		local s = math.random(STAR_SIZE_MIN, STAR_SIZE_MAX)
-		local n = math.round(math.random(s*s*0.25, s*s))
+		local r = math.random(STAR_RADIUS_MIN, STAR_RADIUS_MAX)
+		local n = math.floor(math.random(r*r*0.0625, r*r*0.25))
 		local c = lerpColor(colors[1], colors[2], math.random())
-		table.insert(stars, Star(x, y, s, n, c))
+		table.insert(stars, Star(x, y, r, n, c))
 	end
 
 	local moon = Moon(colors, period, radius)
-	local wave = Wave(colors, width)
+	local wave = Wave(colors, waveWidth)
 	local song = Song(duration)
 
 	local field = Field(moon, wave, stars, song)

@@ -1,5 +1,7 @@
 require 'src/Dependencies'
 
+local t
+
 function love.load()
   love.graphics.setDefaultFilter('nearest', 'nearest')
   love.window.setTitle('we have the stars')
@@ -20,9 +22,10 @@ function love.load()
   -- }
   -- gStateMachine:change('menu')
 
-  gSounds['loop1']:setLooping(true)
-  gSounds['loop1']:play()
+  -- gSounds['loop1']:setLooping(true)
+  -- gSounds['loop1']:play()
 
+  t = 0
   bpm = 120
   spb = 60 / bpm
   local dur = 60
@@ -35,7 +38,7 @@ function love.load()
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
 
-  love.mouse.setVisible(false)
+  love.mouse.setVisible(true)
 
   love.keyboard.keysPressed = {}
   love.mouse.buttonsPressed = {}

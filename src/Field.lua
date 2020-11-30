@@ -13,26 +13,6 @@ function Field:init(moon, wave, stars, song)
 	self:clear()
 end
 
--- function Field:init(d, w, p, r)
--- 	-- points with color values
--- 	self.width = w or FRAME_WIDTH
--- 	self.height = FRAME_HEIGHT
--- 	self.x = (VIRTUAL_WIDTH-self.width)/2
--- 	self.y = (VIRTUAL_HEIGHT-self.height)/2
--- 	self.difficulty = 1
--- 	self.period = p or LUNA_PERIOD
--- 	self.radius = r or LUNA_RADIUS
--- 	self.duration = d or 60
--- 	self.stars = {}
--- 	self.colors = {}
--- 	self.bg = {1, 1, 1, 1}
--- 	self:clear()
--- 	self:fill()
--- 	self.moon = Moon(self.colors, self.period, self.radius, self)
--- 	self.wave = Wave(self.colors, self.width, self)
--- 	self.song = Song(self.duration)
--- end
-
 function Field:update(dt)
 
 
@@ -71,55 +51,34 @@ function Field:clear()
 	love.graphics.rectangle('fill',  128, 96, FRAME_WIDTH, FRAME_HEIGHT)
 end
 
--- function Field:fill()
-
--- 	self:makeColors()
--- 	self:makeStars(20)
--- end
-
--- function Field:makeColors()
--- 	local dColor = 0
--- 	while dColor < 1 do
--- 		self.colors[1] = {math.random(), math.random(), math.random(), 1} -- 'dark'
--- 		self.colors[2] = {math.random(), math.random(), math.random(), 1} -- 'light'
--- 		for i = 1, 3 do
--- 			dColor = dColor + abs(self.colors[1][i] - self.colors[2][i])
--- 		end
--- 	end
--- end
-
--- function Field:makeStars(k)
--- 	for i = 1, k do
--- 		local x = math.random(self.wave.width)
--- 		local y = math.random(self.height)
--- 		local s = math.random(STAR_SIZE_MIN, STAR_SIZE_MAX)
--- 		local n = math.round(math.random(s*s*0.25, s*s))
--- 		local c = lerpColor(self.colors[1], self.colors[2], math.random())
--- 		table.insert(self.stars, Star(x, y, s, n, c))
--- 	end
--- end
-
--- -- loop?
--- function Field:loop()
--- 	self.playMode = 'loop'
--- 	while not self.points[1] do
--- 		table.remove(self.points, 1)
--- 	end
--- 	for k, point in pairs(self.points) do
--- 		point.playMode = 'loop'
--- 	end
--- end
 
 function Field:render()
 	-- draw frame border - image?
 
 	-- draw frame inside
-	self.bg = {1, 1, 1, 1}
+	self.bg = {0, 0, 0, 1}
 	love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 
 	self.wave:render()
 	for k, star in pairs(self.stars) do
-		star:render()
+		-- make sure the star is on screen, and translate to its location
+		if star.waveX + star.radius >= self.wave.x and star.waveX - star.radius < self.wave.x + self.width then 
+			love.graphics.push()
+			love.graphics.setColor(1, 1, 1, 1)
+			love.graphics.translate(self.x + star.waveX - self.wave.x, self.y + star.y)
+			star:render()
+			love.graphics.pop()
+		end
+		if self.wave.x + self.width > self.wave.width then
+			local right = (self.wave.x + self.width) % self.wave.width
+			if star.waveX + star.radius >= 0 and star.waveX - star.radius < right then
+				love.graphics.push()
+				love.graphics.setColor(1, 1, 1, 1)
+				love.graphics.translate(self.x + star.waveX + self.wave.width - self.wave.x, self.y + star.y)
+				star:render()
+				love.graphics.pop()
+			end
+		end -- this can be more concise
 	end
 	self.moon:render()
 end

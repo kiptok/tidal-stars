@@ -23,22 +23,23 @@ require 'src/constants'
 require 'src/Beat'
 require 'src/Field'
 require 'src/Moon'
+require 'src/NightMaker'
 require 'src/Player'
 require 'src/Point'
 require 'src/Song'
 require 'src/Star'
 require 'src/Wave'
 
-gSounds['loop'] = {
-	[1] = love.audio.newSource('sounds/loop1.wav'),
-	[2] = love.audio.newSource('sounds/loop2.wav'),
-	[3] = love.audio.newSource('sounds/loop3.wav'),
-	[4] = love.audio.newSource('sounds/loop4.wav')
-}
+-- gSounds['loop'] = {
+-- 	[1] = love.audio.newSource('sounds/loop1.wav'),
+-- 	[2] = love.audio.newSource('sounds/loop2.wav'),
+-- 	[3] = love.audio.newSource('sounds/loop3.wav'),
+-- 	[4] = love.audio.newSource('sounds/loop4.wav')
+-- }
 
-gSounds['star'] = {
-	[1] = love.audio.newSource('sounds/star1.wav'),
-	[2] = love.audio.newSource('sounds/star2.wav'),
-	[3] = love.audio.newSource('sounds/star3.wav'),
-	[4] = love.audio.newSource('sounds/star4.wav')
-}
+-- gSounds['star'] = {
+-- 	[1] = love.audio.newSource('sounds/star1.wav'),
+-- 	[2] = love.audio.newSource('sounds/star2.wav'),
+-- 	[3] = love.audio.newSource('sounds/star3.wav'),
+-- 	[4] = love.audio.newSource('sounds/star4.wav')
+-- }

@@ -3,12 +3,11 @@ Point = Class{}
 -- points are visible
 -- they have many properties
 
-function Point:init(x, y, c, a)
+function Point:init(x, y, c)
 	self.x = x
 	self.y = y
-	self:round()
+	-- self:round()
 	-- self.luminosity = l or 0 -- not using this right now. it's just a function of the light
-	self.alphaRange = a or {0, 1} -- i.e. dimness offset
 	self.currentColor = 1 -- index
 	self.colors = c -- table of intrinsic colors
 	self.light = {c[1], c[2], c[3], c[4] or 1} -- visible color
@@ -17,11 +16,11 @@ function Point:init(x, y, c, a)
 	-- period = spb +/- (math.random() / 120)
 	-- pulse = spb -- remove this?
 	-- 2 colors for now	
-	local ct = {} -- color interpolation amounts
-	for i = 1, 3 do
-		table.insert(ct, math.sqrt(math.random()))
-	end
-	self:addColor(ct)
+	-- local ct = {} -- color interpolation amounts
+	-- for i = 1, 3 do
+	-- 	table.insert(ct, math.sqrt(math.random()))
+	-- end
+	-- self:addColor(ct)
 end
 
 function Point:update(dt)
@@ -114,6 +113,6 @@ end
 
 -- maybe adjust for luminosity here?
 function Point:render()
-	love.graphics.setColor({self.light[1] % 1, self.light[2] % 1, self.light[3] % 1, self.light[4]})
+	love.graphics.setColor(self.light[1] % 1, self.light[2] % 1, self.light[3] % 1, self.light[4])
 	love.graphics.points(self.x, self.y)
 end
