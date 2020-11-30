@@ -39,7 +39,7 @@ function Star:make()
 	for k, point in pairs(self.points) do
 		local r = self.radius
 		local x = round((math.random()-0.5) * (math.random()-0.5) * 4 * r)
-		local y = round((math.random()-0.5) * (math.random()-0.5) * 4 * r)
+		local y = math.random(-r, r) / x
 		for i = 1, 3 do
 			local dc = (math.random()-0.5) * 2 * self.dcolor
 			point.light[i] = point.light[i] + dc

@@ -2,17 +2,28 @@ local shader_code = [[
 
 extern vec4 color1;
 extern vec4 color2;
-extern float offsetX;
-extern float offsetY;
-extern float lineX;
+extern vec2 fieldResolution;
+extern vec2 offset;
+extern float leftPhase;
+extern float rightPhase;
 extern float time;
+extern float line;
 
 vec4 effect(vec4 color, Image texture, vec2 tc, vec2 st) {
-	st -= vec2(offsetX, offsetY);
-	float waveX = sin(st.y+time);
-
-
-
+	st -= offset;
+	st = st / fieldResolution;
+	float waveX = sin(st.y*10.+time)*0.03; // waveX is an offset
+	float lineX = line - offset.x;
+	lineX = lineX / fieldResolution.x;
+	st.x += waveX;
+	float pct = mix(leftPhase, rightPhase, st.x);
+	if (lineX < 1.0 && st.x < lineX) {
+		pct = mix (leftPhase, 1.0, st.x / lineX);
+	}
+	if (lineX < 1.0 && st.x > lineX) {
+		pct = mix (1.0, rightPhase, (st.x - lineX) / 1.0 - lineX);
+	}
+	color = mix(color1, color2, pct);
 	return color;
 }
 
@@ -34,7 +45,7 @@ function Wave:init(c, w)
 	self.view = {} -- % positions of left & right sides of the view?
 	self.line = {} -- the bounding line that separates the extreme colors
 	-- self.moon = self.field.moon
-	-- self.lineX = self.moon:getPhase() * self.width -- position of wave
+	self.lineX = 0 -- screen position of wave
 end
 
 function Wave:update(dt) -- update the wave to follow the moon phase
@@ -54,7 +65,7 @@ function Wave:flow()
 	-- self.view[2] = (phase + (round(fov / 2))) % 1
 
 	-- self.lineX = -self.moon:getPhase() % 1 * self.width
-	self.lineX = math.floor(-phase * self.width)
+	self.lineX = math.floor(phase * self.width)
 
 	-- plus the offset this is where the middle of the wave is e.g. at 0 the wave is in the middle
 
@@ -74,16 +85,18 @@ end
 
 function Wave:render()
 	love.graphics.push()
-	-- love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.setColor(0, 0, 0, 1)
+	love.graphics.setColor(1, 1, 1, 1)
+	-- love.graphics.setColor(0, 0, 0, 1)
 
-	-- love.graphics.setShader(self.shader) -- shader for the water
-	-- self.shader:send('lineX', self.lineX) -- give coordinates adjusted for the wave
-	-- self.shader:send('offsetX', self.field.x)
-	-- self.shader:send('offsetY', self.field.y)
-	-- self.shader:send('color1', self.colors[1])
-	-- self.shader:send('color2', self.colors[2])
-	-- self.shader:send('time', self.time)
+	love.graphics.setShader(self.shader) -- shader for the water
+	self.shader:send('line', self.lineX) -- give coordinates adjusted for the wave
+	self.shader:send('fieldResolution', {self.field.width, self.field.height})
+	self.shader:send('offset', {self.field.x, self.field.y})
+	self.shader:send('color1', self.colors[1])
+	self.shader:send('color2', self.colors[2])
+	self.shader:send('leftPhase', self.x / self.width)
+	self.shader:send('rightPhase', (self.x + self.field.width) / self.width) -- might be higher than 1
+	self.shader:send('time', self.time)
 	love.graphics.rectangle('fill', self.field.x, self.field.y, self.field.width, self.field.height)
 
 	-- love.graphics.translate(-math.floor(self.camX), 0)

@@ -53,7 +53,7 @@ end
 
 
 function Field:render()
-	-- draw frame border - image?
+
 
 	-- draw frame inside
 	self.bg = {0, 0, 0, 1}
@@ -80,5 +80,8 @@ function Field:render()
 			end
 		end -- this can be more concise
 	end
+
+	-- draw frame border - image?
+
 	self.moon:render()
 end
