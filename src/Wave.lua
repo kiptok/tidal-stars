@@ -17,13 +17,13 @@ function Wave:init(c, w, f)
 	self.field = f
 	self.x = self.field.x
 	self.y = self.field.y
-	self.offsetX = self.field.width / 2 -- offset to set the edge of the wave in the middle
+	self.waveOffset = self.field.width / 2 -- offset to set the edge of the wave in the middle
 	self.colors = c
 	self.shader = love.graphics.newShader('shader_code')
 	self.line = {} -- the bounding line that separates the extreme colors
 	self.width = w or VIRTUAL_WIDTH -- span of the wave. may grow bigger. scale w/ difficulty
 	self.moon = self.field.moon
-	self.waveX = self.moon:getPhase() * self.width -- position of wave
+	self.lineX = self.moon:getPhase() * self.width -- position of wave
 end
 
 function Wave:update(dt) -- update the wave to follow the moon phase
@@ -33,16 +33,17 @@ function Wave:update(dt) -- update the wave to follow the moon phase
 end
 
 function Wave:flow()
-	-- get the moon phase
-	self.waveX = self.moon:getPhase() * self.width
+	-- get the moon phase to determine the middle of the wave
+	self.lineX = self.moon:getPhase() * self.width
 
-	-- plus the offset this is where the middle of the wave is
+	-- plus the offset this is where the middle of the wave is e.g. at 0 the wave is in the middle
 
 end
 
 function Wave:render()
 	love.graphics.setShader(self.shader) -- shader for the water
-	self.shader:send('waveX' ) -- give coordinates adjusted for the wave
+	self.shader:send('lineX', self.lineX) -- give coordinates adjusted for the wave
+	-- self.shader:send('time', )
 
 	love.graphics.setShader()
 end

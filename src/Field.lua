@@ -1,6 +1,6 @@
 Field = Class{}
 
-function Field:init(d, p, w, r)
+function Field:init(d, w, p, r)
 	-- points with color values
 	self.width = w or FRAME_WIDTH
 	self.height = FRAME_HEIGHT
@@ -9,6 +9,7 @@ function Field:init(d, p, w, r)
 	self.difficulty = 1
 	self.period = p or LUNA_PERIOD
 	self.radius = r or LUNA_RADIUS
+	self.duration = d or 60
 	self.stars = {}
 	self.colors = {}
 	self.bg = {1, 1, 1, 1}
@@ -16,7 +17,7 @@ function Field:init(d, p, w, r)
 	self:fill()
 	self.moon = Moon(self.colors, self.period, self.radius, self)
 	self.wave = Wave(self.colors, self.width, self)
-	self.duration = d or 60
+	self.song = Song(self.duration)
 end
 
 function Field:update(dt)

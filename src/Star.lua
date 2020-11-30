@@ -54,7 +54,12 @@ function Star:twinkle(dt)
 end
 
 function Star:render()
-	for k, point in pairs(self.points) do
-		point:render()
+	if not self.collected then
+		if self.next then -- render in two places?
+
+		end
+		for k, point in pairs(self.points) do
+			point:render()
+		end
 	end
 end

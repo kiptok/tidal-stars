@@ -23,11 +23,13 @@ function love.load()
   gSounds['loop1']:setLooping(true)
   gSounds['loop1']:play()
 
-  -- bpm = 120
-  -- spb = 60 / bpm
+  bpm = 120
+  spb = 60 / bpm
   local dur = 60
-  -- song = Song (dur)
-  field = Field(dur, LUNA_PERIOD, FRAME_WIDTH, LUNA_RADIUS)
+  local period = LUNA_PERIOD
+  local radius = LUNA_RADIUS
+  local frameWidth = FRAME_WIDTH -- maybe unnecessary
+  field = Field(dur, frameWidth, period, radius)
 
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
