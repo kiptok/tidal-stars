@@ -18,7 +18,7 @@ function Star:init(x, y, s, n, c)
 end
 
 function Star:update(dt)
-	if self.collected then
+	if self.collected then -- trail the player or something
 		
 	end
 

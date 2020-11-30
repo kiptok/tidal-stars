@@ -26,10 +26,11 @@ function love.load()
   bpm = 120
   spb = 60 / bpm
   local dur = 60
+  local width = FRAME_WIDTH -- for now
+  local difficulty = 1
   local period = LUNA_PERIOD
   local radius = LUNA_RADIUS
-  local frameWidth = FRAME_WIDTH -- maybe unnecessary
-  field = Field(dur, frameWidth, period, radius)
+  field = NightMaker.generate(width, difficulty, period, radius)
 
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
@@ -51,6 +52,8 @@ end
 
 function love.update(dt)
   t = t + dt
+
+  field:update(dt)
 
   love.keyboard.keysPressed = {}
   love.mouse.buttonsPressed = {}

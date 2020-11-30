@@ -2,8 +2,7 @@ Moon = Class{}
 
 -- the heart/beat
 
-function Moon:init(c, p, r, f)
-	self.field = f
+function Moon:init(c, p, r)
 	self.x = VIRTUAL_WIDTH / 2
 	self.y = VIRTUAL_HEIGHT / 2
 	self.period = p or LUNA_PERIOD -- time to pass through all moon phases

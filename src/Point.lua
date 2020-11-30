@@ -28,15 +28,6 @@ function Point:update(dt)
 
 end
 
--- -- slightly adjust color
--- function Point:twinkle(dt, r)
--- 	local range = r
-
--- 	for i = 1, 3 do
--- 		self.light[i] = 
--- 	end
--- end
-
 -- -- fade colors
 -- function Point:fade(dt)
 -- 	local nextColor = self.currentColor + 1
