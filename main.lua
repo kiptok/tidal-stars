@@ -94,6 +94,10 @@ function love.mouse.wasPressed(button)
     end
 end
 
+-- function reset()
+
+-- end
+
 -- helper functions
 
 -- linear interpolation

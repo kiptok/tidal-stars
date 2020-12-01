@@ -37,6 +37,8 @@ function NightMaker.generate(w, d, p, r)
 		table.insert(stars, Star(x, y, r, n, c))
 	end
 
+	stars[math.random(numStars)].next = true
+
 	local moon = Moon(colors, period, radius)
 	local wave = Wave(colors, waveWidth, waveHeight)
 	local song = Song(duration)
