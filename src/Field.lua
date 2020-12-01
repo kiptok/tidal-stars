@@ -82,6 +82,16 @@ function Field:render()
 	end
 
 	-- draw frame border - image?
+	love.graphics.setColor(1, 1, 1, 1)
+
+	local bw = (VIRTUAL_WIDTH - self.width) / 2 -- border width
+	local bh = (VIRTUAL_HEIGHT - self.height) / 2 -- border height
+
+	love.graphics.rectangle('fill', self.x - bw, self.y - bh, self.width + bw * 2, bh)
+	love.graphics.rectangle('fill', self.x - bw, self.y + self.height, self.width + bw * 2, bh)
+	love.graphics.rectangle('fill', self.x - bw, self.y, bw, self.height)
+	love.graphics.rectangle('fill', self.x + self.width, self.y, bw, self.height)
+
 
 	self.moon:render()
 end

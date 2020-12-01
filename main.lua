@@ -29,7 +29,7 @@ function love.load()
   bpm = 120
   spb = 60 / bpm
   local dur = 60
-  local width = FRAME_WIDTH -- for now
+  local width = FRAME_WIDTH * 8 -- for now
   local difficulty = 1
   local period = LUNA_PERIOD
   local radius = LUNA_RADIUS
