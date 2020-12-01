@@ -8,13 +8,14 @@ function Star:init(x, y, r, n, c)
 	self.numPoints = n -- # of points
 	self.color = c -- principal color
 	self.dcolorMax = 0.2 -- some # indicating how much the color can change
-	self.dcolor = self.dcolorMax / 10
+	self.dcolor = self.dcolorMax * 0.1
 	self.count = math.random() * 0.1
 	self.period = 0.1 + math.random() * 0.1
 	self.points = {} -- collection of points that aggregate around the center
 	self.space = {}
 	self.collected = false
 	self.next = false
+	self.onScreen = false
 	-- self.note
 	-- for k = 1, self.numPoints do
 	-- 	table.insert(self.points, Point(0, 0, self.color))
@@ -47,9 +48,9 @@ function Star:make()
 	for i = -self.radius, self.radius do
 		for j = -self.radius, self.radius do
 			local distance = math.sqrt(i*i+j*j)
-			if math.random()*math.random()*self.radius >= distance then
+			if math.random()*math.random()*math.random()*self.radius >= distance then
 				newColor[4] = 1 - (distance / self.radius)
-				table.insert(self.points, Point(j, i, newColor))
+				table.insert(self.points, Point(j, i, {newColor})) -- more colors?
 			end
 			newColor = self:newColor(self.color)
 		end
@@ -139,17 +140,7 @@ end
 -- slightly adjust colors of points within range
 function Star:twinkle()
 	for k, point in pairs(self.points) do
-		for i = 1, 3 do
-			local dc = point.light[i] - self.color[i] -- first the current color deviation
-			dc = dc + (math.random(5)-3) * 0.5 * self.dcolor -- add more
-			if dc < -self.dcolorMax then
-				dc = dc + self.dcolorMax * 2
-			end
-			if dc > self.dcolorMax then
-				dc = dc - self.dcolorMax * 2
-			end
-			point.light[i] = self.color[i] + dc
-		end
+		point.light = self:newColor(point.light)
 	end
 end
 

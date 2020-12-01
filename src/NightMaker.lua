@@ -14,7 +14,6 @@ function NightMaker.generate(w, d, p, r)
 	-- difficulty-adjustable settings
 	local numStars = 40
 	local minColorDiff = 1.6
-	local duration = 60
 
 	-- set colors randomly with minimum difference
 	local dColor = 0
@@ -41,7 +40,7 @@ function NightMaker.generate(w, d, p, r)
 
 	local moon = Moon(colors, period, radius)
 	local wave = Wave(colors, waveWidth, waveHeight)
-	local song = Song(duration)
+	local song = Song()
 
 	local field = Field(moon, wave, stars, song)
 	moon.field = field

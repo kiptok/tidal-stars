@@ -29,8 +29,8 @@ Field = Class{}
 function Field:init(moon, wave, stars, song)
 	self.width = FRAME_WIDTH
 	self.height = FRAME_HEIGHT
-	self.x = (VIRTUAL_WIDTH-self.width)/2
-	self.y = (VIRTUAL_HEIGHT-self.height)/2
+	self.x = (VIRTUAL_WIDTH - self.width) / 2
+	self.y = (VIRTUAL_HEIGHT - self.height) / 2
 	self.borderColors = {}
 	self.moon = moon
 	self.wave = wave
@@ -38,16 +38,26 @@ function Field:init(moon, wave, stars, song)
 	self.song = song
 	self.shader = love.graphics.newShader(shader_code)
 	self.bg = {1, 1, 1, 1}
-	self.time = 0
+	self.time = 0 -- overall time
+	self.timer = 0 -- game timer
 	self:clear()
 end
 
 function Field:update(dt)
 	self.time = self.time + dt
+	self.timer = self.timer + dt
+	if self.timer >= duration then
+		reset()
+	end
+	self:size()
 	self.moon:update(dt)
 	self.wave:update(dt)
 	for k, star in pairs(self.stars) do
-		if star then
+		if star.waveX + star.radius >= self.wave.x and star.waveX - star.radius < self.wave.x + self.width then
+			if not star.onScreen then
+				star.onScreen = true
+				-- play its sound
+			end
 			if star.next then
 				if gameX < self.x + star.waveX - self.wave.x + star.radius and gameX > self.x + star.waveX - self.wave.x - star.radius then
 					if gameY < self.y + star.y + star.radius and gameY > self.y + star.y - star.radius then
@@ -66,11 +76,11 @@ function Field:update(dt)
 					end
 				end
 			end
-			star:update(dt)
+		else
+			star.onScreen = false
 		end
+		star:update(dt)
 	end
-
-
 end
 
 function Field:clear()
@@ -78,28 +88,32 @@ function Field:clear()
 	self.borderColors[1] = {math.random(), math.random(), math.random(), 1}
 	self.borderColors[2] = {math.random(), math.random(), math.random(), 1}
 	love.graphics.setColor(self.bg)
-	love.graphics.rectangle('fill',  128, 96, FRAME_WIDTH, FRAME_HEIGHT)
+	love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
+end
+
+function Field:size()
+	self.width = math.min((1 - self.timer / duration) * VIRTUAL_WIDTH, FRAME_WIDTH)
+	self.x = (VIRTUAL_WIDTH - self.width) / 2
+	self.y = (VIRTUAL_HEIGHT - self.height) / 2
 end
 
 
 function Field:render()
-
-
 	-- draw frame inside
 	self.bg = {0, 0, 0, 1}
 	love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 
 	self.wave:render()
+
 	for k, star in pairs(self.stars) do
-		-- make sure the star is on screen, and translate to its location
-		if star.waveX + star.radius >= self.wave.x and star.waveX - star.radius < self.wave.x + self.width then 
+		if star.onScreen then -- make sure the star is on screen, and translate to its location
 			love.graphics.push()
 			love.graphics.setColor(1, 1, 1, 1)
 			love.graphics.translate(self.x + star.waveX - self.wave.x, self.y + star.y)
 			star:render()
 			love.graphics.pop()
 		end
-		if self.wave.x + self.width > self.wave.width then
+		if self.wave.x + self.width > self.wave.width then -- draw other side of the wave across border
 			local right = (self.wave.x + self.width) % self.wave.width
 			if star.waveX + star.radius >= 0 and star.waveX - star.radius < right then
 				love.graphics.push()
@@ -108,8 +122,10 @@ function Field:render()
 				star:render()
 				love.graphics.pop()
 			end
-		end -- this can be more concise
+		end -- this can be more concise. maybe
 	end
+
+	self.moon:render()
 
 	-- draw frame border - image?
 	love.graphics.setColor(1, 1, 1, 1)
@@ -126,7 +142,4 @@ function Field:render()
 	love.graphics.rectangle('fill', self.x - bw, self.y, bw, self.height)
 	love.graphics.rectangle('fill', self.x + self.width, self.y, bw, self.height)
 	love.graphics.setShader()
-
-
-	self.moon:render()
 end

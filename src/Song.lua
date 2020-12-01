@@ -2,7 +2,7 @@ Song = Class{}
 
 function Song:init(d)
 	-- points with color values
-	self.duration = d or 9999
+	self.duration = duration
 	self.stars = {}
 	self.tempo = t or 120
 	self:clear()

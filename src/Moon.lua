@@ -17,17 +17,21 @@ function Moon:init(c, p, r)
 end
 
 function Moon:update(dt)
-	-- phase left/right
-	if love.keyboard.isDown('a') or love.keyboard.isDown('left') then
-		self.dp = self.dp + self.accel
-	elseif love.keyboard.isDown('d') or love.keyboard.isDown('right') then
-		self.dp = self.dp - self.accel
+	-- -- phase left/right
+	-- if love.keyboard.isDown('a') or love.keyboard.isDown('left') then
+	-- 	self.dp = self.dp + self.accel
+	-- elseif love.keyboard.isDown('d') or love.keyboard.isDown('right') then
+	-- 	self.dp = self.dp - self.accel
+	-- end
+
+	if love.keyboard.isDown('space') then
+		if gameX < VIRTUAL_WIDTH / 2 then
+			self.dp = self.dp + self.accel
+		elseif gameX >= VIRTUAL_WIDTH / 2 then
+			self.dp = self.dp - self.accel
+		end
 	end
-	-- stop
-	if love.keyboard.wasPressed('space') then
-		self.dp = 0
-	end
-	-- make speed limits
+	-- make speed limits?
 
 	-- maybe let these ramp up/down
 	self:updatePhase(dt)

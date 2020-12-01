@@ -1,10 +1,14 @@
 require 'src/Dependencies'
 
-local t
+local width = FRAME_WIDTH * 16 -- for now
+local difficulty = 1
+local period = LUNA_PERIOD
+local radius = LUNA_RADIUS
+local field
 
 function love.load()
   love.graphics.setDefaultFilter('nearest', 'nearest')
-  love.window.setTitle('we have the stars')
+  love.window.setTitle('tidal stars')
 	math.randomseed(os.time())
 
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
@@ -16,23 +20,14 @@ function love.load()
 
   font = love.graphics.newFont('fonts/font.ttf', 16)
 
-  -- gStateMachine = StateMachine {
-  --   ['menu'] = function() return MenuState() end,
-  --   ['play'] = function() return PlayState() end
-  -- }
-  -- gStateMachine:change('menu')
-
   -- gSounds['loop1']:setLooping(true)
   -- gSounds['loop1']:play()
-
+  
   t = 0
   bpm = 120
   spb = 60 / bpm
-  local dur = 60
-  local width = FRAME_WIDTH * 8 -- for now
-  local difficulty = 1
-  local period = LUNA_PERIOD
-  local radius = LUNA_RADIUS
+  duration = 120
+
   field = NightMaker.generate(width, difficulty, period, radius)
 
   love.graphics.setColor(1, 1, 1, 1)
@@ -94,9 +89,10 @@ function love.mouse.wasPressed(button)
     end
 end
 
--- function reset()
-
--- end
+function reset()
+  field = false
+  field = NightMaker.generate(width, difficulty, period, radius)
+end
 
 -- helper functions
 

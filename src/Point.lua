@@ -10,7 +10,7 @@ function Point:init(x, y, c)
 	-- self.luminosity = l or 0 -- not using this right now. it's just a function of the light
 	self.currentColor = 1 -- index
 	self.colors = c -- table of intrinsic colors
-	self.light = {c[1], c[2], c[3], c[4] or 1} -- visible color
+	self.light = c[1] -- visible color
 	-- something like this
 	-- or make the period a global 'drunk' value
 	-- period = spb +/- (math.random() / 120)
