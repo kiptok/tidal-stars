@@ -89,9 +89,8 @@ function love.mouse.wasPressed(button)
     end
 end
 
-function reset()
-  field = false
-  field = NightMaker.generate(width, difficulty, period, radius)
+function reset(colors)
+  field = NightMaker.generate(width, difficulty, period, radius, colors)
 end
 
 -- helper functions

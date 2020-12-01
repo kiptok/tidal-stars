@@ -26,9 +26,9 @@ function Moon:update(dt)
 
 	if love.keyboard.isDown('space') then
 		if gameX < VIRTUAL_WIDTH / 2 then
-			self.dp = self.dp + self.accel
+			self.dp = self.dp + self.accel * (1 - gameX / VIRTUAL_WIDTH * 2)
 		elseif gameX >= VIRTUAL_WIDTH / 2 then
-			self.dp = self.dp - self.accel
+			self.dp = self.dp - self.accel * (gameX / VIRTUAL_WIDTH * 2 - 1)
 		end
 	end
 	-- make speed limits?

@@ -1,14 +1,14 @@
 NightMaker = Class{}
 
-function NightMaker.generate(w, d, p, r)
+function NightMaker.generate(w, d, p, r, c)
 	local waveWidth = w
 	local difficulty = d
 	local period = p
 	local radius = r
+	local colors = c or false
 
 	local waveHeight = FRAME_HEIGHT
 
-	local colors = {}
 	local stars = {}
 
 	-- difficulty-adjustable settings
@@ -16,13 +16,16 @@ function NightMaker.generate(w, d, p, r)
 	local minColorDiff = 1.6
 
 	-- set colors randomly with minimum difference
-	local dColor = 0
-	while dColor < minColorDiff do
-		dColor = 0
-		colors[1] = {math.random(), math.random(), math.random(), 1} -- 'dark'
-		colors[2] = {math.random(), math.random(), math.random(), 1} -- 'light'
-		for i = 1, 3 do
-			dColor = dColor + math.abs(colors[1][i] - colors[2][i])
+	if not colors then
+		colors = {}
+		local dColor = 0
+		while dColor < minColorDiff do
+			dColor = 0
+			colors[1] = {math.random(), math.random(), math.random(), 1} -- 'dark'
+			colors[2] = {math.random(), math.random(), math.random(), 1} -- 'light'
+			for i = 1, 3 do
+				dColor = dColor + math.abs(colors[1][i] - colors[2][i])
+			end
 		end
 	end
 

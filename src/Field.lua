@@ -21,7 +21,7 @@ function Field:update(dt)
 	self.time = self.time + dt
 	self.timer = self.timer + dt
 	if self.timer >= duration then
-		reset()
+		reset(self.borderColors)
 	end
 	self:size()
 	self.moon:update(dt)
