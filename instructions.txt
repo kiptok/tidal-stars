@@ -1,1 +1,5 @@
 instructions
+
+spacebar - phase towards mouse
+click - collect
+r - reset
