@@ -52,7 +52,7 @@ function Star:make()
 		end
 	end
 
-	local cycles = math.random(6) + 5
+	local cycles = math.random(12) + 9
 
 	for k = 1, cycles do -- maybe rapidly switch between these per step?
 		local choice = math.random(4)
