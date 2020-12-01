@@ -16,6 +16,7 @@ function Star:init(x, y, r, n, c)
 	self.collected = false
 	self.next = false
 	self.onScreen = false
+	self.alive = true
 	-- self.note -- sound that plays
 	-- for k = 1, self.numPoints do
 	-- 	table.insert(self.points, Point(0, 0, self.color))
@@ -31,8 +32,8 @@ function Star:update(dt)
 		self.count = self.count % self.period
 	end
 
-	if self.collected then -- trail the player or something
-		
+	if self.collected and self.alive then -- trail the player or something
+		self:die(dt)
 	end
 
 end
@@ -72,7 +73,6 @@ function Star:make()
 					if not self.points[y][x] then
 						self.points[y][x] = Point(x, y, {newColor})
 					end
-					-- table.insert(self.points, Point(x, y, {newColor}))
 				end
 			end
 		elseif choice == 2 then -- cardioid
@@ -92,7 +92,6 @@ function Star:make()
 				if not self.points[y][x] then
 					self.points[y][x] = Point(x, y, {newColor})
 				end
-				-- table.insert(self.points, Point(x, y, {newColor}))
 			end
 		elseif choice == 3 then -- rose
 			local a = (math.random()-0.5) * 2 * self.radius
@@ -112,7 +111,6 @@ function Star:make()
 				if not self.points[y][x] then
 					self.points[y][x] = Point(x, y, {newColor})
 				end
-				-- table.insert(self.points, Point(x, y, {newColor}))
 			end
 		elseif choice == 4 then -- random
 			for l = 1, 360 do
@@ -125,21 +123,9 @@ function Star:make()
 				if not self.points[y][x] then
 					self.points[y][x] = Point(x, y, {newColor})
 				end
-				-- table.insert(self.points, Point(x, y, {newColor}))
 			end
 		end
 	end
-
-	-- for i = -self.radius, self.radius do
-	-- 	for j = -self.radius, self.radius do
-	-- 		local distance = math.sqrt(i*i+j*j)
-	-- 		if math.random()*math.random()*math.random()*math.random()*self.radius >= distance then
-	-- 			newColor[4] = 1 - (distance / self.radius)
-	-- 			table.insert(self.points, Point(j, i, {newColor})) -- more colors?
-	-- 		end
-	-- 		newColor = self:newColor(self.color)
-	-- 	end
-	-- end
 end
 
 -- slightly adjust colors of points within range
@@ -165,31 +151,36 @@ function Star:newColor(c)
 		until math.abs(newColor[i] - lastColor[i]) < self.dcolorMax
 	end
 	newColor[4] = lastColor[4]
-	-- for i = 1, 3 do
-	-- 	local dc = color[i] - self.color[i] -- first the current color deviation
-	-- 	dc = dc + (math.random()-0.5) * 2 * self.dcolor -- discrete amount of color change
-	-- 	if dc < -self.dcolorMax then
-	-- 		dc = dc + self.dcolorMax * 2
-	-- 	end
-	-- 	if dc > self.dcolorMax then
-	-- 		dc = dc - self.dcolorMax * 2
-	-- 	end
-	-- 	color[i] = self.color[i] + dc
-	-- end
 	return newColor
 end
 
-function Star:render()
-	if not self.collected then
-		if self.next then -- render in two places?
-
+function Star:die(dt)
+	local da = 0
+	for k, row in pairs(self.points) do
+		for l, point in pairs(row) do
+			if point then
+				point.light = lerpColor(point.light, {1, 1, 1, 0}, dt)
+				da = da + point.light[4]
+			end
 		end
-		for k, row in pairs(self.points) do
-			for l, point in pairs(row) do
-				if point then
-					point:render()
+	end
+	if da < 0.001 then
+		self.alive = false
+		self.next = false
+	end
+end
+
+function Star:render()
+	if self.alive and self.onScreen then
+		if self.next then -- right now only render next star
+			for k, row in pairs(self.points) do
+				for l, point in pairs(row) do
+					if point then
+						point:render()
+					end
 				end
 			end
 		end
 	end
+	-- render in two places?
 end

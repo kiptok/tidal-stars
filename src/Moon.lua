@@ -3,16 +3,17 @@ Moon = Class{}
 -- the heart/beat
 
 function Moon:init(c, p, r)
-	self.x = VIRTUAL_WIDTH / 2
+	self.x = VIRTUAL_WIDTH / 2 -- middle of the moon
 	self.y = VIRTUAL_HEIGHT / 2
 	self.period = p or LUNA_PERIOD -- time to pass through all moon phases
 	self.day = self.period * INITIAL_PHASE
 	self.phase = INITIAL_PHASE
 	self.dp = 0 -- speed of change of day
 	self.accel = LUNA_ACCEL
-	self.radius = r or LUNA_RADIUS -- moon size
+	self.radius = r or LUNA_RADIUS -- moon radius
 	self.colors = c
 	self.points = {} -- points
+	self.shader = love.graphics.newShader('shaders/moon_shader.vs')
 	self:make()
 end
 
@@ -89,9 +90,23 @@ function Moon:getPhase()
 end
 
 function Moon:render()
+	love.graphics.push()
+	love.graphics.setColor(1, 1, 1, 1)
+	-- love.graphics.setColor(0, 0, 0, 1)
+
+	love.graphics.setShader(self.shader) -- shader for the water
+	self.shader:send('moonRadius', self.radius)
+	self.shader:send('moonCenter', {self.x, self.y})
+	self.shader:send('moonPhase', self.phase)
+	self.shader:send('color1', self.colors[1])
+	self.shader:send('color2', self.colors[2])
+
 	for k, row in pairs(self.points) do
 		for l, point in pairs(row) do
 			point:render()
 		end
 	end
+
+	love.graphics.pop()
+	love.graphics.setShader()
 end

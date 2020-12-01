@@ -27,6 +27,7 @@ function love.load()
   bpm = 120
   spb = 60 / bpm
   duration = 180
+  state = 'play'
 
   field = NightMaker.generate(width, difficulty, period, radius)
 
@@ -71,6 +72,9 @@ function love.keypressed(key)
   if key == 'escape' then
     love.event.quit()
   end
+  if key == 'r' then
+    state = 'reset'
+  end
 end
 
 function love.keyboard.wasPressed(key)
@@ -89,8 +93,8 @@ function love.mouse.wasPressed(button)
     end
 end
 
-function reset(colors)
-  field = NightMaker.generate(width, difficulty, period, radius, colors)
+function reset(moonColors, borderColors)
+  field = NightMaker.generate(width, difficulty, period, radius, moonColors, borderColors)
 end
 
 -- helper functions

@@ -20,7 +20,6 @@ lume = require 'lib/lume'
 
 require 'src/constants'
 
-require 'src/Beat'
 require 'src/Field'
 require 'src/Moon'
 require 'src/NightMaker'

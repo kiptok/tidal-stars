@@ -1,11 +1,11 @@
 NightMaker = Class{}
 
-function NightMaker.generate(w, d, p, r, c)
+function NightMaker.generate(w, d, p, r, mc, bc)
 	local waveWidth = w
 	local difficulty = d
 	local period = p
 	local radius = r
-	local colors = c or false
+	local colors = bc or false
 
 	local waveHeight = FRAME_HEIGHT
 
@@ -47,9 +47,21 @@ function NightMaker.generate(w, d, p, r, c)
 	local song = Song()
 
 	local field = Field(moon, wave, stars, song)
+
+	if state == 'reset' then
+		field.shifting[1] = true;
+		field.shifting[2][1] = true;
+		field.shifting[2][2] = true;
+		field.shifting[3] = mc;
+		field.shifting[4][1] = {math.random(), math.random(), math.random(), 1};
+		field.shifting[4][2] = {math.random(), math.random(), math.random(), 1};
+	end
+
 	moon.field = field
 	wave.field = field
 	song.field = field
+
+
 
 	return field
 end

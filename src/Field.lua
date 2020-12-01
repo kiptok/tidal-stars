@@ -14,47 +14,63 @@ function Field:init(moon, wave, stars, song)
 	self.bg = {1, 1, 1, 1}
 	self.time = 0 -- overall time
 	self.timer = 0 -- game timer
+	self.shifting = {false, {false, false}, self.moon.colors, {}}
 	self:clear()
 end
 
 function Field:update(dt)
-	self.time = self.time + dt
-	self.timer = self.timer + dt
-	if self.timer >= duration then
-		reset(self.borderColors)
-	end
-	self:size(dt)
-	self.moon:update(dt)
-	self.wave:update(dt)
-	for k, star in pairs(self.stars) do
-		if star.waveX + star.radius >= self.wave.x and star.waveX - star.radius < self.wave.x + self.width then
-			if not star.onScreen then
-				star.onScreen = true
-				-- play its sound
-			end
-			if star.next then
-				if gameX < self.x + star.waveX - self.wave.x + star.radius and gameX > self.x + star.waveX - self.wave.x - star.radius then
-					if gameY < self.y + star.y + star.radius and gameY > self.y + star.y - star.radius then
-						if love.mouse.wasPressed(1) then
-							self.timer = math.max(self.timer - 10, 0)
-							star.collected = true
-							star.next = false
-							local nextStar = false
-							while not nextStar do
-								local index = math.random(#self.stars)
-								if not self.stars[index].collected then
-									self.stars[index].next = true
-									nextStar = true
+	if state == 'play' then
+		self.time = self.time + dt
+		self.timer = self.timer + dt
+		if self.timer >= duration then
+			state = 'reset'
+		end
+		self:size(dt)
+		if self.shifting[1] then
+			self:shiftColors(dt)
+		end
+		self.moon:update(dt)
+		self.wave:update(dt)
+		for k, star in pairs(self.stars) do
+			if star.waveX + star.radius >= self.wave.x and star.waveX - star.radius < self.wave.x + self.width then
+				if not star.onScreen then
+					star.onScreen = true
+					-- play its sound
+				end
+				if star.next then -- star collection
+					if gameX < self.x + star.waveX - self.wave.x + star.radius and gameX > self.x + star.waveX - self.wave.x - star.radius then
+						if gameY < self.y + star.y + star.radius and gameY > self.y + star.y - star.radius then
+							if love.mouse.wasPressed(1) then -- successful shot
+								self.timer = math.max(self.timer - 10, 0)
+								star.collected = true
+								local nextStar = false
+								while not nextStar do
+									local index = math.random(#self.stars)
+									if not self.stars[index].collected then
+										self.stars[index].next = true
+										nextStar = true
+									end
 								end
+								local index = math.random(2)
+								self.shifting[1] = true -- start shifting colors to a new one
+								self.shifting[2][index] = true
+								self.shifting[3] = self.moon.colors
+								self.shifting[4][index] = {math.random(), math.random(), math.random(), 1}
 							end
 						end
 					end
 				end
+			if star.alive then
+				star:update(dt)
 			end
-		star:update(dt)
-		else
-			star.onScreen = false
+			else
+				star.onScreen = false
+			end
 		end
+	end
+	if state == 'reset' then
+		state = 'play'
+		reset(self.moon.colors, self.borderColors)
 	end
 end
 
@@ -68,11 +84,38 @@ end
 
 function Field:size(dt)
 	local nextWidth = math.min((1 - self.timer / duration) * VIRTUAL_WIDTH, FRAME_WIDTH)
-	self.width = lerp(self.width, nextWidth, dt)
+	local dWidth = 0
+	if nextWidth < self.width then
+		dWidth = math.max(math.ceil(nextWidth - self.width), -2)
+	elseif nextWidth > self.width then
+		dWidth = math.min(math.floor(nextWidth - self.width), 2)
+	end
+	self.width = self.width + dWidth
 	self.x = (VIRTUAL_WIDTH - self.width) / 2
 	self.y = (VIRTUAL_HEIGHT - self.height) / 2
 end
 
+function Field:shiftColors(dt)
+	local index = self.shifting[2]
+	local oldColors = self.shifting[3]
+	local targetColors = self.shifting[4]
+	local shifting = false
+	for i = 1, 2 do
+		if index[i] then
+			shifting = true
+			local newColor = lerpColor(oldColors[i], targetColors[i], dt*0.2)
+			self.moon.colors[i] = newColor
+			local dc = 0
+			for j = 1, 3 do
+				dc = dc + math.abs(targetColors[i][j] - oldColors[i][j])
+			end
+			if dc < 0.01 then
+				index[i] = false
+			end
+		end
+	end
+	self.shifting[1] = shifting
+end
 
 function Field:render()
 	-- draw frame inside

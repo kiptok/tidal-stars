@@ -37,9 +37,13 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 st) {
 	float waveX2 = cos(st.x*8.*PI+time*0.017)*0.5*sin(time*0.35);
 	wave.y = wave.y + waveX1 + waveX2;
 
-	float tide = cos(time*0.2)*0.05;
+	vec2 tide;
+	float tide1 = cos(time*0.2)*0.05;
+	float tide2 = sin(time*0.29)*0.05;
+	tide.x = tide.x + tide1 + tide2;
+
 	st += wave;
-  st.x += tide;
+  st += tide;
 
   float stepscale = 0.4;
 
