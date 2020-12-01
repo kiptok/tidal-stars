@@ -44,35 +44,89 @@ function Star:make()
 	end
 	local newColor = self:newColor(self.color)
 
-	-- rings
-	for k = 1, self.radius do
-		-- if math.random() * (1 - k / self.radius) > 0.5 then
-		if math.random() > 0.8 or k / self.radius < 0.1 then
-			for i = 1, k do
-				local x = math.floor(math.sqrt(k*k-i*i))
-				newColor = self:newColor(self.color)
-				newColor[4] = 1 - (k / self.radius)
-				table.insert(self.points, Point(x, i, {newColor}))
-				table.insert(self.points, Point(-x, i, {newColor}))
-				table.insert(self.points, Point(-x, -i, {newColor}))
-				table.insert(self.points, Point(x, -i, {newColor}))
+	for i = -self.radius, self.radius do
+		self.points[i] = {}
+		for j = -self.radius, self.radius do
+			self.points[i][j] = false
+		end
+	end
+
+	local cycles = math.random(6) + 5
+
+	for k = 1, cycles do -- maybe rapidly switch between these per step?
+		local choice = math.random(4)
+		local r
+		local theta
+		local x
+		local y
+		if choice == 1 then -- circle
+			local circles = math.random(8)
+			for j = 1, circles do
+				r = math.random() * self.radius
+				for l = 1, 360 do
+					theta = l*2*math.pi/360
+					x = math.floor(r*math.cos(theta))
+					y = math.floor(r*math.sin(theta))
+					newColor = self:newColor(self.color)
+					newColor[4] = 1 - (r / self.radius)
+					if not self.points[y][x] then
+						self.points[y][x] = Point(x, y, {newColor})
+					end
+					-- table.insert(self.points, Point(x, y, {newColor}))
+				end
 			end
-		end
-		if math.random() > 0.8 or k / self.radius < 0.1 then
-			newColor = self:newColor(self.color)
-			newColor[4] = 1 - (k / self.radius)
-			table.insert(self.points, Point(k, 0, {newColor}))
-			table.insert(self.points, Point(0, k, {newColor}))
-			table.insert(self.points, Point(-k, 0, {newColor}))
-			table.insert(self.points, Point(0, -k, {newColor}))
-		end
-		if math.random() > 0.8 or k / self.radius < 0.1 then
-			newColor = self:newColor(self.color)
-			newColor[4] = 1 - (k / self.radius)
-			table.insert(self.points, Point(k, k, {newColor}))
-			table.insert(self.points, Point(-k, k, {newColor}))
-			table.insert(self.points, Point(-k, -k, {newColor}))
-			table.insert(self.points, Point(k, -k, {newColor}))
+		elseif choice == 2 then -- cardioid
+			local a = (math.random()-0.5) * self.radius
+			local trig = math.random(2)
+			for l = 1, 360 do
+				theta = l*2*math.pi/360
+				if trig == 1 then
+					r = a - a*math.sin(theta)
+				else
+					r = a + a*math.cos(theta)
+				end
+				x = math.floor(r*math.cos(theta))
+				y = math.floor(r*math.sin(theta))
+				newColor = self:newColor(self.color)
+				newColor[4] = 1 - (r / self.radius)
+				if not self.points[y][x] then
+					self.points[y][x] = Point(x, y, {newColor})
+				end
+				-- table.insert(self.points, Point(x, y, {newColor}))
+			end
+		elseif choice == 3 then -- rose
+			local a = (math.random()-0.5) * 2 * self.radius
+			local b = math.random(8)
+			local trig = math.random(2)
+			for l = 1, 360 do
+				theta = l*2*math.pi/360
+				if trig == 1 then
+					r = a*math.sin(b*theta)
+				else
+					r = a*math.cos(b*theta)
+				end
+				x = math.floor(r*math.cos(theta))
+				y = math.floor(r*math.sin(theta))
+				newColor = self:newColor(self.color)
+				newColor[4] = 1 - (r / self.radius)
+				if not self.points[y][x] then
+					self.points[y][x] = Point(x, y, {newColor})
+				end
+				-- table.insert(self.points, Point(x, y, {newColor}))
+			end
+		elseif choice == 4 then -- random
+			for l = 1, 360 do
+				theta = l*2*math.pi/360
+				r = math.random() * self.radius
+				x = math.floor(r*math.cos(theta))
+				y = math.floor(r*math.sin(theta))
+				newColor = self:newColor(self.color)
+				newColor[4] = 1 - (r / self.radius)
+				if not self.points[y][x] then
+					self.points[y][x] = Point(x, y, {newColor})
+				end
+				-- table.insert(self.points, Point(x, y, {newColor}))
+			end
 		end
 	end
 
@@ -88,13 +142,15 @@ function Star:make()
 	-- end
 end
 
--- no do some procedural geometry
-
 -- slightly adjust colors of points within range
 function Star:twinkle()
-	for k, point in pairs(self.points) do
-		local newColor = self:newColor(point.light)
-		point.light = newColor
+	for k, row in pairs(self.points) do
+		for l, point in pairs(row) do
+			if point then
+				local newColor = self:newColor(point.light)
+				point.light = newColor
+			end
+		end
 	end
 end
 
@@ -128,8 +184,12 @@ function Star:render()
 		if self.next then -- render in two places?
 
 		end
-		for k, point in pairs(self.points) do
-			point:render()
+		for k, row in pairs(self.points) do
+			for l, point in pairs(row) do
+				if point then
+					point:render()
+				end
+			end
 		end
 	end
 end

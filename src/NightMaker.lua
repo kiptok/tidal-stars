@@ -35,7 +35,8 @@ function NightMaker.generate(w, d, p, r, c)
 		local y = math.random(FRAME_HEIGHT)
 		local r = math.random(STAR_RADIUS_MIN, STAR_RADIUS_MAX)
 		local n = math.floor(math.random(r*r*0.125, r*r*0.5))
-		local c = lerpColor(colors[1], colors[2], math.random())
+		local c = {math.random(), math.random(), math.random(), 1}
+		-- local c = lerpColor(colors[1], colors[2], math.random())
 		table.insert(stars, Star(x, y, r, n, c))
 	end
 

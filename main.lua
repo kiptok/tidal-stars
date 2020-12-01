@@ -26,7 +26,7 @@ function love.load()
   t = 0
   bpm = 120
   spb = 60 / bpm
-  duration = 120
+  duration = 180
 
   field = NightMaker.generate(width, difficulty, period, radius)
 

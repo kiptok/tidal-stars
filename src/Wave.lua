@@ -8,14 +8,12 @@ function Wave:init(c, w, h)
 	self.y = 0
 	self.camX = 0
 	self.time = 0
-	-- self.waveOffset = self.field.width / 2 -- offset to set the edge of the wave in the middle
 	self.colors = c
 	self.shader = love.graphics.newShader('shaders/wave_shader.vs')
 	self.width = w or FRAME_WIDTH -- span of the wave. may grow bigger. scale w/ difficulty
 	self.height = h or FRAME_HEIGHT
 	self.view = {} -- % positions of left & right sides of the view?
 	self.line = {} -- the bounding line that separates the extreme colors
-	-- self.moon = self.field.moon
 	self.lineX = 0 -- screen position of wave
 end
 
@@ -48,7 +46,6 @@ function Wave:render()
 	-- love.graphics.setColor(0, 0, 0, 1)
 
 	love.graphics.setShader(self.shader) -- shader for the water
-	-- self.shader:send('frameResolution', {self.field.width, self.field.height})
 	self.shader:send('waveResolution', {self.width, self.height})
 	self.shader:send('wavePosition', {self.x, self.y})
 	self.shader:send('offset', {self.field.x, self.field.y})
@@ -56,18 +53,7 @@ function Wave:render()
 	self.shader:send('color1', self.colors[1])
 	self.shader:send('color2', self.colors[2])
 
-
-	-- self.shader:send('line', self.lineX) -- give coordinates adjusted for the wave
-	-- self.shader:send('frameResolution', {self.field.width, self.field.height})
-	-- self.shader:send('offset', {self.field.x, self.field.y})
-	-- self.shader:send('color1', self.colors[1])
-	-- self.shader:send('color2', self.colors[2])
-	-- self.shader:send('leftPhase', self.x / self.width)
-	-- self.shader:send('rightPhase', (self.x + self.field.width) / self.width) -- might be higher than 1
-	-- self.shader:send('time', self.time)
 	love.graphics.rectangle('fill', self.field.x, self.field.y, self.field.width, self.field.height)
-
-	-- love.graphics.translate(-math.floor(self.camX), 0)
 
 	love.graphics.pop()
 

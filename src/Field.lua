@@ -23,7 +23,7 @@ function Field:update(dt)
 	if self.timer >= duration then
 		reset(self.borderColors)
 	end
-	self:size()
+	self:size(dt)
 	self.moon:update(dt)
 	self.wave:update(dt)
 	for k, star in pairs(self.stars) do
@@ -36,7 +36,7 @@ function Field:update(dt)
 				if gameX < self.x + star.waveX - self.wave.x + star.radius and gameX > self.x + star.waveX - self.wave.x - star.radius then
 					if gameY < self.y + star.y + star.radius and gameY > self.y + star.y - star.radius then
 						if love.mouse.wasPressed(1) then
-							self.timer = math.max(self.timer - 5, 0)
+							self.timer = math.max(self.timer - 10, 0)
 							star.collected = true
 							star.next = false
 							local nextStar = false
@@ -51,10 +51,10 @@ function Field:update(dt)
 					end
 				end
 			end
+		star:update(dt)
 		else
 			star.onScreen = false
 		end
-		star:update(dt)
 	end
 end
 
@@ -66,8 +66,9 @@ function Field:clear()
 	love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 end
 
-function Field:size()
-	self.width = math.min((1 - self.timer / duration) * VIRTUAL_WIDTH, FRAME_WIDTH)
+function Field:size(dt)
+	local nextWidth = math.min((1 - self.timer / duration) * VIRTUAL_WIDTH, FRAME_WIDTH)
+	self.width = lerp(self.width, nextWidth, dt)
 	self.x = (VIRTUAL_WIDTH - self.width) / 2
 	self.y = (VIRTUAL_HEIGHT - self.height) / 2
 end
