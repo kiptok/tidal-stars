@@ -1,6 +1,6 @@
 require 'src/Dependencies'
 
-local width = FRAME_WIDTH * 16 -- for now
+local width = FRAME_WIDTH * 20 -- for now
 local difficulty = 1
 local period = LUNA_PERIOD
 local radius = LUNA_RADIUS
