@@ -1,7 +1,7 @@
 Star = Class{}
 
 function Star:init(x, y, r, n, c)
-	-- self.category
+	-- self.category = 
 	-- self.class
 	self.waveX = x -- center of points
 	self.x = 0

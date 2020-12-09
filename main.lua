@@ -144,26 +144,43 @@ function differenceBlend(a, b)
   return newColor
 end
 
--- sum of color difference
-function differenceSum(a, b)
-  local sum = 0
+-- differences
+function colorDifference(a, b)
+  local rgb = {a, b}
+  local hsv = {RGBtoHSV(a), RGBtoHSV(b)}
+  local rgbDiff = 0 -- also include individual component differences?
+  local hueDiff = math.abs(hsv[1][1] - hsv[2][1])
+  local satDiff = math.abs(hsv[1][2] - hsv[2][2])
+  local valDiff = math.abs(hsv[1][3] - hsv[2][3])
   for i = 1, 3 do
-    sum = sum + math.abs(a[i] - b[i])
+    rgbDiff = rgbDiff + math.abs(rgb[i] - rgb[i])
   end
-  return sum
+  return rgbDiff, hueDiff, satDiff, valDiff
+end
+
+--rotated color
+function rotatedColor(a, d)
+  local newColor = RGBtoHSV(a)
+  newColor[1] = (newColor[1] + d) % 1
+  return HSVtoRGB(newColor)
 end
 
 -- complementary color
 function complementaryColor(a)
-  local newColor = {}
-  local max = math.max(a[1], a[2], a[3])
-  local min = math.min(a[1], a[2], a[3])
-  for i = 1, 3 do
-    newColor[i] = max + min - a[i]
-  end
-  newColor[4] = 1
-  return newColor
+  return rotatedColor(a, 0.5)
 end
+
+-- -- complementary color
+-- function complementaryColor(a)
+--   local newColor = {}
+--   local max = math.max(a[1], a[2], a[3])
+--   local min = math.min(a[1], a[2], a[3])
+--   for i = 1, 3 do
+--     newColor[i] = max + min - a[i]
+--   end
+--   newColor[4] = 1
+--   return newColor
+-- end
 
 -- colors distributed over a span of hue
 function analagousColors(a, n, s) -- color, number (on each side), span

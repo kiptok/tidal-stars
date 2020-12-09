@@ -46,3 +46,4 @@ luac.out
 # release
 release/
 *.toml
+notes.txt
