@@ -55,7 +55,7 @@ function Moon:make() -- initialize points
 	end
 end
 
-function Moon:shine() -- cast light on the playing field?
+function Moon:shine() -- cast light on the playing ocean?
 
 end
 

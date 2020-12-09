@@ -1,8 +1,8 @@
-NightMaker = Class{}
+OceanMaker = Class{}
 
-function NightMaker.generate(w, d, p, r, mc, bc)
+function OceanMaker.generate(w, l, p, r, mc, bc)
 	local waveWidth = w
-	local difficulty = d
+	local level = l
 	local period = p
 	local radius = r
 	local colors = bc or false
@@ -46,22 +46,22 @@ function NightMaker.generate(w, d, p, r, mc, bc)
 	local wave = Wave(colors, waveWidth, waveHeight)
 	local song = Song()
 
-	local field = Field(moon, wave, stars, song)
+	local ocean = Ocean(moon, wave, stars, song)
 
 	if state == 'reset' then
-		field.shifting[1] = true;
-		field.shifting[2][1] = true;
-		field.shifting[2][2] = true;
-		field.shifting[3] = mc;
-		field.shifting[4][1] = {math.random(), math.random(), math.random(), 1};
-		field.shifting[4][2] = {math.random(), math.random(), math.random(), 1};
+		ocean.shifting[1] = true;
+		ocean.shifting[2][1] = true;
+		ocean.shifting[2][2] = true;
+		ocean.shifting[3] = mc;
+		ocean.shifting[4][1] = {math.random(), math.random(), math.random(), 1};
+		ocean.shifting[4][2] = {math.random(), math.random(), math.random(), 1};
 	end
 
-	moon.field = field
-	wave.field = field
-	song.field = field
+	moon.ocean = ocean
+	wave.ocean = ocean
+	song.ocean = ocean
 
 
 
-	return field
+	return ocean
 end

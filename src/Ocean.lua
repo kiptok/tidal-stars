@@ -1,6 +1,6 @@
-Field = Class{}
+Ocean = Class{}
 
-function Field:init(moon, wave, stars, song)
+function Ocean:init(moon, wave, stars, song)
 	self.width = FRAME_WIDTH
 	self.height = FRAME_HEIGHT
 	self.x = (VIRTUAL_WIDTH - self.width) / 2
@@ -11,14 +11,13 @@ function Field:init(moon, wave, stars, song)
 	self.stars = stars
 	self.song = song
 	self.shader = love.graphics.newShader('shaders/frame_shader.vs')
-	self.bg = {1, 1, 1, 1}
 	self.time = 0 -- overall time
 	self.timer = 0 -- game timer
 	self.shifting = {false, {false, false}, self.moon.colors, {}}
 	self:clear()
 end
 
-function Field:update(dt)
+function Ocean:update(dt)
 	if state == 'play' then
 		self.time = self.time + dt
 		self.timer = self.timer + dt
@@ -31,6 +30,7 @@ function Field:update(dt)
 		end
 		self.moon:update(dt)
 		self.wave:update(dt)
+		local allCollected = true
 		for k, star in pairs(self.stars) do
 			if star.waveX + star.radius >= self.wave.x and star.waveX - star.radius < self.wave.x + self.width then
 				if not star.onScreen then
@@ -66,23 +66,31 @@ function Field:update(dt)
 			else
 				star.onScreen = false
 			end
+			if not star.collected then
+				allCollected = false
+			end
+		end
+		if allCollected then
+			state = 'win'
 		end
 	end
 	if state == 'reset' then
 		state = 'play'
 		reset(self.moon.colors, self.borderColors)
 	end
+	if state == 'win' then -- enter win sequence
+
+	end
 end
 
-function Field:clear()
-	self.bg = {1, 1, 1, 1}
+function Ocean:clear()
 	self.borderColors[1] = {math.random(), math.random(), math.random(), 1}
 	self.borderColors[2] = {math.random(), math.random(), math.random(), 1}
-	love.graphics.setColor(self.bg)
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 end
 
-function Field:size(dt)
+function Ocean:size(dt)
 	local nextWidth = math.min((1 - self.timer / duration) * VIRTUAL_WIDTH, FRAME_WIDTH)
 	local dWidth = 0
 	if nextWidth < self.width then
@@ -95,7 +103,7 @@ function Field:size(dt)
 	self.y = (VIRTUAL_HEIGHT - self.height) / 2
 end
 
-function Field:shiftColors(dt)
+function Ocean:shiftColors(dt)
 	local index = self.shifting[2]
 	local oldColors = self.shifting[3]
 	local targetColors = self.shifting[4]
@@ -117,9 +125,8 @@ function Field:shiftColors(dt)
 	self.shifting[1] = shifting
 end
 
-function Field:render()
+function Ocean:render()
 	-- draw frame inside
-	self.bg = {0, 0, 0, 1}
 	love.graphics.rectangle('fill', self.x, self.y, self.width, self.height)
 
 	self.wave:render()

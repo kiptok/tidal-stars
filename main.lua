@@ -2,10 +2,10 @@ require 'src/Dependencies'
 
 local widthMultiple = 20 -- for now
 local width = FRAME_WIDTH * widthMultiple
-local difficulty = 1
+
 local period = LUNA_PERIOD
 local radius = LUNA_RADIUS
-local field
+local ocean
 
 function love.load()
   love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -28,9 +28,10 @@ function love.load()
   bpm = 120
   spb = 60 / bpm
   duration = 180
+  level = 1
   state = 'play'
 
-  field = NightMaker.generate(width, difficulty, period, radius)
+  ocean = OceanMaker.generate(width, difficulty, period, radius)
 
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
@@ -53,7 +54,7 @@ end
 function love.update(dt)
   t = t + dt
 
-  field:update(dt)
+  ocean:update(dt)
 
   love.keyboard.keysPressed = {}
   love.mouse.buttonsPressed = {}
@@ -63,7 +64,7 @@ end
 
 function love.draw()
   push:start()
-  field:render()
+  ocean:render()
   push:finish()
   -- displayFPS()
 end
@@ -95,7 +96,7 @@ function love.mouse.wasPressed(button)
 end
 
 function reset(moonColors, borderColors)
-  field = NightMaker.generate(width, difficulty, period, radius, moonColors, borderColors)
+  ocean = OceanMaker.generate(width, difficulty, period, radius, moonColors, borderColors)
 end
 
 -- helper functions
@@ -131,6 +132,63 @@ function hypotenuse(p0, p1)
   local dx = p1.x - p0.x
   local dy = p1.y - p0.y
   return math.sqrt(dx*dx + dy*dy)
+end
+
+-- difference blend (alpha == 1)
+function differenceBlend(a, b)
+  local newColor = {}
+  for i = 1, 3 do
+    newColor[i] = math.abs(a[i] - b[i])
+  end
+  newColor[4] = 1
+  return newColor
+end
+
+-- sum of color difference
+function differenceSum(a, b)
+  local sum = 0
+  for i = 1, 3 do
+    sum = sum + math.abs(a[i] - b[i])
+  end
+  return sum
+end
+
+-- complementary color
+function complementaryColor(a)
+  local newColor = {}
+  local max = math.max(a[1], a[2], a[3])
+  local min = math.min(a[1], a[2], a[3])
+  for i = 1, 3 do
+    newColor[i] = max + min - a[i]
+  end
+  newColor[4] = 1
+  return newColor
+end
+
+-- colors distributed over a span of hue
+function analagousColors(a, n, s) -- color, number (on each side), span
+  local middle = RGBtoHSV(a)
+  local newColors = {a}
+  for i = 1, n do
+    local left = middle
+    local right = middle
+    left[1] = (left[1] - s/2*i/n) % 1
+    right[1] = (right[1] + s/2*i/n) % 1
+    table.insert(newColors, HSVtoRGB(left))
+    table.insert(newColors, HSVtoRGB(right))
+  end
+  return newColors
+end
+
+-- colors with even hue spacing around the color wheel
+function spacedColors(a, n)
+  local newColors = {}
+  for i = 1, n do
+    local hsvColor = RGBtoHSV(a)
+    hsvColor[1] = (hsvColor[1] + i/n) % 1
+    table.insert(newColors, HSVtoRGB(hsvColor))
+  end
+  return newColors
 end
 
 -- taken from https://www.cs.rit.edu/~ncs/color/t_convert.html
