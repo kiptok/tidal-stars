@@ -5,11 +5,11 @@ function Ocean:init(moon, wave, stars, song)
 	self.height = FRAME_HEIGHT
 	self.x = (VIRTUAL_WIDTH - self.width) / 2
 	self.y = (VIRTUAL_HEIGHT - self.height) / 2
-	self.borderColors = {}
 	self.moon = moon
 	self.wave = wave
 	self.stars = stars
 	self.song = song
+	self.borderColors = {}
 	self.shader = love.graphics.newShader('shaders/frame_shader.vs')
 	self.time = 0 -- overall time
 	self.timer = 0 -- game timer
@@ -32,37 +32,23 @@ function Ocean:update(dt)
 		self.wave:update(dt)
 		local allCollected = true
 		for k, star in pairs(self.stars) do
-			if star.waveX + star.radius >= self.wave.x and star.waveX - star.radius < self.wave.x + self.width then
+			if star.x + star.radius >= self.wave.x and star.x - star.radius < self.wave.x + self.width then
 				if not star.onScreen then
-					star.onScreen = true
-					-- play its sound
+					-- play its sound when it appears
 				end
-				if star.next then -- star collection
-					if gameX < self.x + star.waveX - self.wave.x + star.radius and gameX > self.x + star.waveX - self.wave.x - star.radius then
+				star.onScreen = true
+				if star.next and not star.collected then -- star collection
+					if gameX < self.x + star.x - self.wave.x + star.radius and gameX > self.x + star.x - self.wave.x - star.radius then
 						if gameY < self.y + star.y + star.radius and gameY > self.y + star.y - star.radius then
 							if love.mouse.wasPressed(1) then -- successful shot
-								self.timer = math.max(self.timer - 10, 0)
-								star.collected = true
-								local nextStar = false
-								while not nextStar do
-									local index = math.random(#self.stars)
-									if not self.stars[index].collected then
-										self.stars[index].next = true
-										nextStar = true
-									end
-								end
-								local index = math.random(2)
-								self.shifting[1] = true -- start shifting colors to a new one
-								self.shifting[2][index] = true
-								self.shifting[3] = self.moon.colors
-								self.shifting[4][index] = {math.random(), math.random(), math.random(), 1}
+								self:collect(star)
 							end
 						end
 					end
 				end
-			if star.alive then
-				star:update(dt)
-			end
+				if star.alive then
+					star:update(dt)
+				end
 			else
 				star.onScreen = false
 			end
@@ -76,11 +62,30 @@ function Ocean:update(dt)
 	end
 	if state == 'reset' then
 		state = 'play'
-		reset(self.moon.colors, self.borderColors)
+		local moonParams = {radius = self.moon.radius, acceleration = self.moon.accel, period = self.moon.period}
+		reset(moonParams, self.moon.colors, self.borderColors)
 	end
 	if state == 'win' then -- enter win sequence
 
 	end
+end
+
+function Ocean:collect(star) -- collecting star
+	self.timer = math.max(self.timer - 10, 0)
+	star.collected = true
+	local nextStar = false
+	while not nextStar do
+		local index = math.random(#self.stars)
+		if not self.stars[index].collected then
+			self.stars[index].next = true
+			nextStar = true
+		end
+	end
+	local index = math.random(2) -- start shifting colors to a new one
+	self.shifting[1] = true
+	self.shifting[2][index] = true
+	self.shifting[3] = self.moon.colors
+	self.shifting[4][index] = {math.random(), math.random(), math.random(), 1}
 end
 
 function Ocean:clear()
@@ -135,16 +140,16 @@ function Ocean:render()
 		if star.onScreen then -- make sure the star is on screen, and translate to its location
 			love.graphics.push()
 			love.graphics.setColor(1, 1, 1, 1)
-			love.graphics.translate(self.x + star.waveX - self.wave.x, self.y + star.y)
+			love.graphics.translate(self.x + star.x - self.wave.x, self.y + star.y)
 			star:render()
 			love.graphics.pop()
 		end
 		if self.wave.x + self.width > self.wave.width then -- draw other side of the wave across border
 			local right = (self.wave.x + self.width) % self.wave.width
-			if star.waveX + star.radius >= 0 and star.waveX - star.radius < right then
+			if star.x + star.radius >= 0 and star.x - star.radius < right then
 				love.graphics.push()
 				love.graphics.setColor(1, 1, 1, 1)
-				love.graphics.translate(self.x + star.waveX + self.wave.width - self.wave.x, self.y + star.y)
+				love.graphics.translate(self.x + star.x + self.wave.width - self.wave.x, self.y + star.y)
 				star:render()
 				love.graphics.pop()
 			end
@@ -168,4 +173,7 @@ function Ocean:render()
 	love.graphics.rectangle('fill', self.x - bw, self.y, bw, self.height)
 	love.graphics.rectangle('fill', self.x + self.width, self.y, bw, self.height)
 	love.graphics.setShader()
+
+  love.graphics.setFont(font) -- for debug
+  love.graphics.print('x: ' .. tostring(self.wave.x), 10, 10)
 end

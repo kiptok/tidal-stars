@@ -1,14 +1,14 @@
 Star = Class{}
 
-function Star:init(x, y, r, n, c)
+function Star:init(params, color)
 	-- self.category = 
-	-- self.class
-	self.waveX = x -- center of points
-	self.x = 0
-	self.y = y
-	self.radius = r -- maximum radius of points from center
-	self.numPoints = n -- # of points
-	self.color = c -- principal color
+	self.class = 'A' -- star class
+  self.note = 0 -- sound that plays
+	self.x = params.x -- center of points (relative to the wave)
+	self.y = params.y
+	self.radius = params.radius -- maximum radius of points from center
+	self.numPoints = params.numPoint -- # of points
+	self.color = color -- principal color
 	self.dcolorMax = 0.05 -- some # indicating how much the color can change
 	self.dcolor = self.dcolorMax * 0.4
 	self.count = math.random() * 0.1
@@ -19,7 +19,6 @@ function Star:init(x, y, r, n, c)
 	self.next = false
 	self.onScreen = false
 	self.alive = true
-	-- self.note -- sound that plays
 	-- for k = 1, self.numPoints do
 	-- 	table.insert(self.points, Point(0, 0, self.color))
 	-- end

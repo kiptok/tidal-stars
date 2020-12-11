@@ -1,9 +1,16 @@
-extern vec4 color1;
-extern vec4 color2;
-extern vec2 waveResolution;
-extern vec2 wavePosition;
-extern vec2 offset;
-extern float time;
+uniform vec4 color1;
+uniform vec4 color2;
+uniform vec2 waveResolution;
+uniform vec2 wavePosition;
+uniform vec2 offset;
+uniform float time;
+uniform vec2 tide;
+uniform float ripX1[6];
+uniform float ripX2[6];
+uniform float ripX3[6];
+uniform float ripX4[6];
+uniform float ripY1[6];
+uniform float ripY2[6];
 
 #define PI 3.1415926535
 
@@ -24,31 +31,30 @@ float easeInOutCubic (float x) {
 vec4 effect(vec4 color, Image texture, vec2 tc, vec2 st) {
 	st -= offset;
 	st += wavePosition;
-	st = st / waveResolution;
+	// st = mod(st, waveResolution);
+	st = st / waveResolution; // something is wrong here where the screen changes when x resets to 0
 
-	vec2 wave; // wave is an offset
-	float wave1 = sin(st.y*2.*PI+time*0.07)*0.005*cos(time*0.47);
-	float wave2 = sin((st.y+0.031)*2.7*PI+time*0.061)*0.005*cos(time*0.39+0.117);
-	float wave3 = cos((st.y+0.337)*3.7*PI+time*0.037)*0.005*sin(time*0.53+0.571);
-	float wave4 = cos((st.y+0.829)*3.1*PI+time*0.051)*0.005*sin(time*0.21+0.883); // randomize the values here
-	wave.x = wave1 + wave2 + wave3 + wave4;
+	vec2 ripple;
+	ripple.x += sin(st.y*ripX1[0]*2.*PI+ripX1[1]+time*ripX1[2])*ripX1[3]*cos(time*ripX1[4]+ripX1[5]);
+	ripple.x += sin(st.y*ripX2[0]*2.*PI+ripX2[1]+time*ripX2[2])*ripX2[3]*cos(time*ripX2[4]+ripX2[5]);
+	ripple.x += sin(st.y*ripX3[0]*2.*PI+ripX3[1]+time*ripX3[2])*ripX3[3]*cos(time*ripX3[4]+ripX3[5]);
+	ripple.x += sin(st.y*ripX4[0]*2.*PI+ripX4[1]+time*ripX4[2])*ripX4[3]*cos(time*ripX4[4]+ripX4[5]);
+	ripple.y += sin(st.x*ripY1[0]*2.*PI+ripY1[1]+time*ripY1[2])*ripY1[3]*cos(time*ripY1[4]+ripY1[5]);
+	ripple.y += sin(st.x*ripY2[0]*2.*PI+ripY2[1]+time*ripY2[2])*ripY2[3]*cos(time*ripY2[4]+ripY2[5]);
 
-	float waveX1 = sin(st.x*4.*PI+time*0.011)*0.5*cos(time*0.39);
-	float waveX2 = cos(st.x*8.*PI+time*0.017)*0.5*sin(time*0.35);
-	wave.y = wave.y + waveX1 + waveX2;
-
-	vec2 tide;
-	float tide1 = cos(time*0.2)*0.05;
-	float tide2 = sin(time*0.29)*0.05;
-	tide.x = tide.x + tide1 + tide2;
-
-	st += wave;
+	st += ripple;
   st += tide;
 
-  float stepscale = 0.4;
+  // st.x = (st.x + 0.12) / 0.24;
+  // st.y = (st.y + 1.1) / 2.2; // how do i do this
 
-	st.x = st.x - smoothstep(0.998, 1.002, st.x);
-	st.x = st.x + smoothstep(0.998, 1.002, 1.-st.x);
+  float stepscale = 0.4;
+  st = fract(st);
+
+  // st.x = st.x - smoothstep(0.)
+
+	st.x = st.x - smoothstep(0.990, 1.01, st.x);
+	st.x = st.x + smoothstep(0.990, 1.01, 1.-st.x);
 	st.x = st.x - smoothstep(0.900, 1.000, st.x) * stepscale;
 	st.x = st.x + smoothstep(0.900, 1.000, 1.-st.x) * stepscale;
 	st.x = st.x - smoothstep(0.800, 0.900, st.x) * stepscale;

@@ -1,11 +1,7 @@
 require 'src/Dependencies'
 
-local widthMultiple = 20 -- for now
-local width = FRAME_WIDTH * widthMultiple
-
-local period = LUNA_PERIOD
-local radius = LUNA_RADIUS
 local ocean
+local level = 1
 
 function love.load()
   love.graphics.setDefaultFilter('nearest', 'nearest')
@@ -28,10 +24,9 @@ function love.load()
   bpm = 120
   spb = 60 / bpm
   duration = 180
-  level = 1
   state = 'play'
 
-  ocean = OceanMaker.generate(width, difficulty, period, radius)
+  ocean = OceanMaker.generate(level, LUNA)
 
   love.graphics.setColor(1, 1, 1, 1)
   love.graphics.rectangle('fill', 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
@@ -95,8 +90,8 @@ function love.mouse.wasPressed(button)
     end
 end
 
-function reset(moonColors, borderColors)
-  ocean = OceanMaker.generate(width, difficulty, period, radius, moonColors, borderColors)
+function reset(moonParams, moonColors, borderColors)
+  ocean = OceanMaker.generate(level, moonParams, moonColors, borderColors)
 end
 
 -- helper functions
@@ -114,6 +109,12 @@ function lerpColor(a, b, t)
   end
   return newColor
 end
+
+-- function lerpHue(a, b, t)
+--   local closeColor = {}
+--   local farColor = {}
+  
+-- end
 
 -- round to nearest integer
 function round(a)

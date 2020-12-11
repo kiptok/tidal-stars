@@ -2,16 +2,16 @@ Moon = Class{}
 
 -- the heart/beat
 
-function Moon:init(c, p, r)
+function Moon:init(params, colors)
 	self.x = VIRTUAL_WIDTH / 2 -- middle of the moon
 	self.y = VIRTUAL_HEIGHT / 2
-	self.period = p or LUNA_PERIOD -- time to pass through all moon phases
+	self.period = params.period -- time to pass through all moon phases
+	self.accel = params.acceleration
+	self.radius = params.radius -- moon radius
+	self.colors = colors
 	self.day = self.period * INITIAL_PHASE
 	self.phase = INITIAL_PHASE
 	self.dp = 0 -- speed of change of day
-	self.accel = LUNA_ACCEL
-	self.radius = r or LUNA_RADIUS -- moon radius
-	self.colors = c
 	self.points = {} -- points
 	self.shader = love.graphics.newShader('shaders/moon_shader.vs')
 	self:make()
@@ -31,7 +31,7 @@ function Moon:update(dt)
 	self:updatePhase(dt)
 end
 
-function Moon:make() -- initialize points
+function Moon:make() -- initialize points; don't need this now?
 	self.points[0] = {}
 	self.points[0][0] = Point(self.x, self.y, self.colors)
 	for j = 1, self.radius do -- middle row of points
