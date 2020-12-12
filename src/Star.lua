@@ -39,7 +39,7 @@ function Star:update(dt)
 
 end
 
--- distribute points around the center, creating a semi-cohesive body
+-- set up color and point table
 function Star:make()
 	for i = 1, 3 do -- initialize star color
 		self.color[i] = self.color[i] + (math.random()-0.5) * 2 * self.dcolorMax
@@ -52,79 +52,71 @@ function Star:make()
 			self.points[i][j] = false
 		end
 	end
+end
 
-	local cycles = math.random(12) + 9
-
-	for k = 1, cycles do -- maybe rapidly switch between these per step?
-		local choice = math.random(4)
-		local r
-		local theta
-		local x
-		local y
-		if choice == 1 then -- circle
-			local circles = math.random(8)
-			for j = 1, circles do
-				r = math.random() * self.radius
-				for l = 1, 360 do
-					theta = l*2*math.pi/360
-					x = math.floor(r*math.cos(theta))
-					y = math.floor(r*math.sin(theta))
-					newColor = self:newColor(self.color)
-					newColor[4] = 1 - (r / self.radius)
-					if not self.points[y][x] then
-						self.points[y][x] = Point(x, y, {newColor})
-					end
-				end
-			end
-		elseif choice == 2 then -- cardioid
-			local a = (math.random()-0.5) * self.radius
-			local trig = math.random(2)
+-- add one cycle of points to the star; maybe rapidly switch between these per step?
+function Star:drawCycle(choice) -- change this to a table of functions?
+	local r, theta, x, y
+	local a, b, c, d = 0
+	local offset = {math.random()*2*math.pi, math.random()*2*math.pi}
+	if choice == 1 then -- circle
+		local circles = math.random(8)
+		for j = 1, circles do
+			r = math.random()*self.radius
 			for l = 1, 360 do
 				theta = l*2*math.pi/360
-				if trig == 1 then
-					r = a - a*math.sin(theta)
-				else
-					r = a + a*math.cos(theta)
-				end
-				x = math.floor(r*math.cos(theta))
-				y = math.floor(r*math.sin(theta))
-				newColor = self:newColor(self.color)
-				newColor[4] = 1 - (r / self.radius)
-				if not self.points[y][x] then
-					self.points[y][x] = Point(x, y, {newColor})
-				end
+				self:addPoint(r, theta, 'polar')
 			end
-		elseif choice == 3 then -- rose
-			local a = (math.random()-0.5) * 2 * self.radius
-			local b = math.random(8)
-			local trig = math.random(2)
-			for l = 1, 360 do
-				theta = l*2*math.pi/360
-				if trig == 1 then
-					r = a*math.sin(b*theta)
-				else
-					r = a*math.cos(b*theta)
-				end
-				x = math.floor(r*math.cos(theta))
-				y = math.floor(r*math.sin(theta))
-				newColor = self:newColor(self.color)
-				newColor[4] = 1 - (r / self.radius)
-				if not self.points[y][x] then
-					self.points[y][x] = Point(x, y, {newColor})
-				end
+		end
+	elseif choice == 2 then -- cardioids
+		a = (math.random()-0.5)*self.radius
+		b = math.random(17)-9
+		local factors = math.random(4)
+		for l = 1, 360 do
+			theta = l*2*math.pi/360
+			r = a
+			for j = 1, factors do
+				r = r*math.sin(b*theta+offset[1])
+				offset[1] = math.random()*2*math.pi
+				b = math.random(17)-9
 			end
-		elseif choice == 4 then -- random
-			for l = 1, 360 do
-				theta = l*2*math.pi/360
-				r = math.random() * self.radius
-				x = math.floor(r*math.cos(theta))
-				y = math.floor(r*math.sin(theta))
-				newColor = self:newColor(self.color)
-				newColor[4] = 1 - (r / self.radius)
-				if not self.points[y][x] then
-					self.points[y][x] = Point(x, y, {newColor})
-				end
-			end
+			r = r + a
+			self:addPoint(r, theta, 'polar')
+		end
+	elseif choice == 3 then -- rose
+		a = (math.random()-0.5)*2*self.radius
+		b = math.random(17)-9 -- b might be 0 but oh well
+		-- c = math.random(17)-9 -- add this in later as a denominator?
+		for l = 1, 360 do
+			theta = l*2*math.pi/360
+			r = a*math.sin(b*theta+offset[1])
+			self:addPoint(r, theta, 'polar')
+		end
+	elseif choice == 4 then -- butterfly
+		a = (math.random()-0.5)*self.radius
+		b = math.random(17)-9
+		c = self.radius-a
+		d = math.random(17)-9
+		for l = 1, 360 do
+			theta = l*2*math.pi/360
+			r = a*math.sin(b*theta+offset[1])+c*math.sin(d*theta+offset[2])
+			self:addPoint(r, theta, 'polar')	
+		end
+	elseif choice == 5 then -- band
+		a = (math.random()-0.5)*2*self.radius
+		b = (math.random()-0.5)*4
+		c = (math.random()-0.5*self.radius/math.abs(a))*2 -- let's try it
+		d = (math.random()-0.5*self.radius-math.abs(a*c))*2
+		for l = 1, 360 do
+			theta = l*2*math.pi/360
+			r = a*(b*(theta+offset[1])%c)+d
+			self:addPoint(r, theta, 'polar')
+		end
+	elseif choice == 6 then -- cloud
+		for l = 1, 360 do
+			theta = l*2*math.pi/360
+			r = math.random()*self.radius
+			self:addPoint(r, theta, 'polar')
 		end
 	end
 end
@@ -169,6 +161,18 @@ function Star:die(dt)
 		self.alive = false
 		self.next = false
 	end
+end
+
+function Star:addPoint(a, b, mode)
+	local x, y = a, b
+	local newColor = {}
+	if mode == 'polar' then
+		x = math.floor(a*math.cos(b))
+		y = math.floor(a*math.sin(b))
+	end
+	newColor = self:newColor(self.color) -- change color
+	newColor[4] = 1 - (a / self.radius) -- alpha
+	self.points[y][x] = Point(x, y, {newColor})
 end
 
 function Star:render()

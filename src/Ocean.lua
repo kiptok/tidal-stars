@@ -13,6 +13,7 @@ function Ocean:init(moon, wave, stars, song)
 	self.shader = love.graphics.newShader('shaders/frame_shader.vs')
 	self.time = 0 -- overall time
 	self.timer = 0 -- game timer
+	self.harmony = 1 -- harmony relative to dissonance
 	self.shifting = {false, {false, false}, self.moon.colors, {}}
 	self:clear()
 end

@@ -42,11 +42,17 @@ function OceanMaker.generate(l, m, mc, bc)
 		numPoints = math.floor(math.random(r*r*0.125, r*r*0.5)) -- # of points
 		-- class = 
 		-- note = 
-	}
+		}
 		local starColor = {math.random(), math.random(), math.random(), 1} -- color
-		-- local c = lerpColor(colors[1], colors[2], math.random())
-		
-		
+		-- local starColor = lerpColor(colors[1], colors[2], math.random())
+		local star = Star(starParams, starColor)
+
+		local cycles = math.random(12) + 9 -- scale with or replace numPoints
+		for k = 1, cycles do
+			local choice = math.random(6) -- not just random
+			star.drawCycle(choice)
+		end
+
 		table.insert(stars, Star(starParams, starColor))
 	end
 

@@ -4,13 +4,13 @@ Wave = Class{}
 
 function Wave:init(params, colors)
 	-- self.ocean = f
+	self.width = params.width -- span of the wave. may grow bigger. scale w/ difficulty
+	self.height = params.height
 	self.x = 0 -- x position of wave on the left side
-	self.y = 0
+	self.y = 0 -- y position of wave on the top side
 	self.time = 0
 	self.colors = colors
 	self.shader = love.graphics.newShader('shaders/wave_shader.vs')
-	self.width = params.width -- span of the wave. may grow bigger. scale w/ difficulty
-	self.height = params.height
 	-- self.view = {} -- % positions of left & right sides of the view?
 	-- self.line = {} -- the bounding line that separates the extreme colors
 	-- self.lineX = 0 -- screen position of wave
@@ -21,15 +21,17 @@ end
 
 function Wave:update(dt) -- update the wave to follow the moon phase
 	self.time = self.time + dt
-	self:flow()
 	self:updateTide()
+	self:flow()
 end
 
-function Wave:flow()-- adjust the position of the waves
-	local phase = self.ocean.moon:getPhase()
+function Wave:flow() -- adjust the position of the waves
+	local phase = self.ocean.moon:getPhase() -- phase determines force of the wave
 	local fov = self.ocean.width / self.width -- % amount of the wave seen
-	self.x = -(phase + fov / 2) % 1 * self.width
-	-- self.lineX = math.floor(phase * self.width)
+	self.x = -(phase+fov/2)%1*self.width
+
+	-- move to tide instead
+	self.x = lerp(0, self.width-self.ocean.width, self.tide[1])
 end
 
 -- function Wave:reset()
@@ -38,13 +40,21 @@ end
 -- end
 
 function Wave:updateTide() -- update the tide
-	local tidesVars = self.vars[1]
+	-- local tidesVars = self.vars[1]
+	local force = (self.ocean.moon:getPhase()-0.5)*2 -- maybe change phase range to -1-1 in Moon.lua
+	local time = self.time%(math.pi*2)
+	local tideVars = self.vars[1][1][1]
 	local tide = {0, 0}
-	for i = 1, 2 do
-		for k, tideVars in pairs(tidesVars[i]) do
-			tide[i] = tide[i] + math.sin(self.time*tideVars[1]+tideVars[2])*tideVars[3]
-		end
-	end
+	-- for i = 1, 2 do
+	-- 	for k, tideVars in pairs(tidesVars[i]) do
+	-- 		tide[i] = tide[i] + math.sin(self.time*tideVars[1]+tideVars[2])*tideVars[3]
+	-- 	end
+	-- end
+
+	-- only doing 1 x tide for now
+	tide[1] = math.sin(time*force*tideVars[1]+tideVars[2])
+	tide[1] = (tide[1]+1)/2 -- adjust to 0-1 range
+
 	self.tide = tide
 end
 
