@@ -12,7 +12,7 @@ FRAME_HEIGHT = VIRTUAL_HEIGHT*4/5
 
 INITIAL_PHASE = 0.25
 
-LUNA = {radius = 48, acceleration = 0.08, period = 29.530587981, inertia = 0.5, topSpeed = 2.5}
+LUNA = {radius = 48, acceleration = 0.08, period = 29.530587981, inertia = 0.5, topSpeed = 5}
 EUROPA = {radius = 43, acceleration = 0.0227109826, period = 3.551181}
 TITAN = {period = 15.945}
 DEIMOS = {period = 1.263}

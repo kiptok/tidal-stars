@@ -109,6 +109,7 @@ function Moon:render()
 	self.shader:send('moonPhase', self.phase)
 	self.shader:send('color1', self.colors[1])
 	self.shader:send('color2', self.colors[2])
+	self.shader:send('seed', seed)
 
 	for k, row in pairs(self.points) do
 		for l, point in pairs(row) do

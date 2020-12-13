@@ -63,7 +63,7 @@ function Ocean:update(dt)
 	end
 	if state == 'reset' then
 		state = 'play'
-		local moonParams = {radius = self.moon.radius, acceleration = self.moon.accel, period = self.moon.period}
+		local moonParams = {radius = self.moon.radius, acceleration = self.moon.accel, period = self.moon.period, inertia = self.moon.inertia, topSpeed = self.moon.topSpeed}
 		reset(moonParams, self.moon.colors, self.borderColors)
 	end
 	if state == 'win' then -- enter win sequence

@@ -25,6 +25,7 @@ function love.load()
   spb = 60 / bpm
   duration = 180
   state = 'play'
+  seed = math.random()
 
   ocean = OceanMaker.generate(level, LUNA)
 
