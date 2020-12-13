@@ -8,6 +8,7 @@ function Moon:init(params, colors)
 	self.period = params.period -- time to pass through all moon phases
 	self.accel = params.acceleration
 	self.radius = params.radius -- moon radius
+	self.topSpeed = params.topSpeed -- fastest phase change
 	self.colors = colors
 	self.day = self.period * INITIAL_PHASE
 	self.phase = INITIAL_PHASE
@@ -18,13 +19,24 @@ function Moon:init(params, colors)
 end
 
 function Moon:update(dt)
-	if love.keyboard.isDown('space') then
-		if gameX < VIRTUAL_WIDTH / 2 then
-			self.dp = self.dp + self.accel * (1 - gameX / VIRTUAL_WIDTH * 2)
-		elseif gameX >= VIRTUAL_WIDTH / 2 then
-			self.dp = self.dp - self.accel * (gameX / VIRTUAL_WIDTH * 2 - 1)
-		end
+	-- if love.keyboard.isDown('space') then
+	-- 	if gameX < VIRTUAL_WIDTH / 2 then
+	-- 		self.dp = self.dp + self.accel * (1 - gameX / VIRTUAL_WIDTH * 2)
+	-- 	elseif gameX >= VIRTUAL_WIDTH / 2 then
+	-- 		self.dp = self.dp - self.accel * (gameX / VIRTUAL_WIDTH * 2 - 1)
+	-- 	end
+	-- end
+
+	if love.keyboard.isDown('a') or love.keyboard.isDown('left') then
+		self.dp = math.min(self.dp+self.accel, self.topSpeed)
+	elseif love.keyboard.isDown('d') or love.keyboard.isDown('right') then
+		self.dp = math.max(self.dp-self.accel, -self.topSpeed)
+	elseif self.dp < 0 then
+		self.dp = math.min(self.dp+self.accel, 0)
+	elseif self.dp > 0 then
+		self.dp = math.max(self.dp-self.accel, 0)
 	end
+
 	-- make speed limits?
 
 	-- maybe let these ramp up/down
@@ -32,24 +44,25 @@ function Moon:update(dt)
 end
 
 function Moon:make() -- initialize points; don't need this now?
+	local white = {1, 1, 1, 1}
 	self.points[0] = {}
-	self.points[0][0] = Point(self.x, self.y, self.colors)
+	self.points[0][0] = Point(self.x, self.y, white)
 	for j = 1, self.radius do -- middle row of points
-		self.points[0][j] = Point(j+self.x, self.y, self.colors)
-		self.points[0][-j] = Point(-j+self.x, self.y, self.colors)
+		self.points[0][j] = Point(j+self.x, self.y, white)
+		self.points[0][-j] = Point(-j+self.x, self.y, white)
 	end
 	for i = 1, self.radius do
 		self.points[i] = {}
 		self.points[-i] = {}
-		self.points[i][0] = Point(self.x, i+self.y, self.colors) -- middle column of points
-		self.points[-i][0] = Point(self.x, -i+self.y, self.colors)
+		self.points[i][0] = Point(self.x, i+self.y, white) -- middle column of points
+		self.points[-i][0] = Point(self.x, -i+self.y, white)
 		for j = 1, self.radius do -- create points that are within the radius from center
 			local d = math.sqrt(j*j+i*i)
 			if d <= self.radius then
-				self.points[i][j] = Point(j+self.x, i+self.y, self.colors)
-				self.points[i][-j] = Point(-j+self.x, i+self.y, self.colors)
-				self.points[-i][j] = Point(j+self.x, -i+self.y, self.colors)
-				self.points[-i][-j] = Point(-j+self.x, -i+self.y, self.colors)
+				self.points[i][j] = Point(j+self.x, i+self.y, white)
+				self.points[i][-j] = Point(-j+self.x, i+self.y, white)
+				self.points[-i][j] = Point(j+self.x, -i+self.y, white)
+				self.points[-i][-j] = Point(-j+self.x, -i+self.y, white)
 			end
 		end
 	end

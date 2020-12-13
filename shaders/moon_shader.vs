@@ -35,17 +35,23 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 st) {
 	st = st / vec2(moonRadius); // -1 to 1 coordinates
 
 	float radius = length(st);
-	float width = sqrt(1. - st.y*st.y);
+	vec2 wh = vec2(sqrt(1. - st.y*st.y), sqrt(1. - st.x*st.x)); // width/height at each point
 
-	// st.x = length(st);
+	st = st / wh; // make points circular ratios
 
-	st.x = st.x / width;
-
-	float phase = mod(st.x / 4. + moonPhase, 1.);
+	float phase = mod(st.x / 4. + moonPhase, 1.); // phase of each point
 
 	phase = phase - smoothstep(0.9, 1.1, phase);
 	phase = phase + smoothstep(0.1, -0.1, phase);
 
 	color = mix(color1, color2, phase);
+
+	// terrain map
+	float scale = 10;
+	float peaks = smoothstep(0.5, 0.6, noise(mod(st*scale+phase*scale*4.,scale*4.)));
+	float valleys = smoothstep(0.5, 0.6, noise(mod(st*scale+phase*scale*4.,scale*4.)+scale*4.));
+
+	color.rgb = (color.rgb+peaks-valleys)/3.+1./3.;
+
 	return color;
 }

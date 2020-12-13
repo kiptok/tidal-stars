@@ -154,9 +154,9 @@ function colorDifference(a, b)
   local satDiff = math.abs(hsv[1][2] - hsv[2][2])
   local valDiff = math.abs(hsv[1][3] - hsv[2][3])
   for i = 1, 3 do
-    rgbDiff = rgbDiff + math.abs(rgb[i] - rgb[i])
+    rgbDiff = rgbDiff + math.abs(rgb[1][i] - rgb[2][i])
   end
-  return rgbDiff, hueDiff, satDiff, valDiff
+  return {rgbDiff, hueDiff, satDiff, valDiff}
 end
 
 --rotated color
@@ -210,7 +210,8 @@ function spacedColors(a, n)
 end
 
 -- taken from https://www.cs.rit.edu/~ncs/color/t_convert.html
-function RGBtoHSV(r, g, b)
+function RGBtoHSV(c)
+  local r, g, b = c[1], c[2], c[3]
   local min = math.min(r, g, b)
   local max = math.max(r, g, b)
   local delta = max - min
@@ -240,10 +241,11 @@ function RGBtoHSV(r, g, b)
     h = h + 360
   end
 
-  return h, s, v
+  return {h, s, v}
 end
 
-function HSVtoRGB(h, s, v)
+function HSVtoRGB(c)
+  local h, s, v = c[1], c[2], c[3]
   if s == 0 then
     return v, v, v
   end
@@ -264,7 +266,7 @@ function HSVtoRGB(h, s, v)
     [5] = function() return v, p, q end
   }
 
-  return result[i]
+  return {result[i]}
 end
 
 function displayFPS()

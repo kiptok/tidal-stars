@@ -175,6 +175,10 @@ function Ocean:render()
 	love.graphics.rectangle('fill', self.x + self.width, self.y, bw, self.height)
 	love.graphics.setShader()
 
-  love.graphics.setFont(font) -- for debug
-  love.graphics.print('x: ' .. tostring(self.wave.x), 10, 10)
+ --  love.graphics.setFont(font) -- for debug
+ --  love.graphics.print('phase: ' .. tostring(self.moon.phase), 10, 10)
+	-- love.graphics.print('dp: ' .. tostring(self.moon.dp), 10, 22)
+ --  love.graphics.print('x: ' .. tostring(self.wave.x), 10, 34)
+ --  love.graphics.print('tide: ' .. tostring(self.wave.tide[1]), 10, 46)
+	-- love.graphics.print('time: ' .. tostring(self.wave.time), 10, 58)
 end

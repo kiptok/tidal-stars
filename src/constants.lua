@@ -1,18 +1,19 @@
--- WINDOW_WIDTH, WINDOW_HEIGHT = love.window.getDimensions
--- VIRTUAL_WIDTH, VIRTUAL_HEIGHT = love.window.getDimensions
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 
 VIRTUAL_WIDTH = 1280
 VIRTUAL_HEIGHT = 720
 
+-- WINDOW_WIDTH, WINDOW_HEIGHT = love.window.getDimensions
+-- VIRTUAL_WIDTH, VIRTUAL_HEIGHT = love.window.getDimensions
+
 FRAME_WIDTH = VIRTUAL_WIDTH*71/80
 FRAME_HEIGHT = VIRTUAL_HEIGHT*4/5
 
-INITIAL_PHASE = 0
+INITIAL_PHASE = 0.25
 
-LUNA = {radius = 48, acceleration = 0.002, period = 29.530587981}
-EUROPA = {radius = 43, acceleration = 0.00227109826, period = 3.551181}
+LUNA = {radius = 48, acceleration = 0.02, period = 29.530587981, topSpeed = 1}
+EUROPA = {radius = 43, acceleration = 0.0227109826, period = 3.551181}
 TITAN = {period = 15.945}
 DEIMOS = {period = 1.263}
 PHOBOS = {period = 0.31891023}

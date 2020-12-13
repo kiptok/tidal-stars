@@ -39,7 +39,7 @@ function OceanMaker.generate(l, m, mc, bc)
 		x = math.random(waveWidth), -- x
 		y = math.random(waveHeight), -- y
 		radius = math.random(STAR_RADIUS_MIN, STAR_RADIUS_MAX), -- radius
-		numPoints = math.floor(math.random(r*r*0.125, r*r*0.5)) -- # of points
+		numPoints = math.floor(math.random(radius*radius*0.125, radius*radius*0.5)) -- # of points
 		-- class = 
 		-- note = 
 		}
