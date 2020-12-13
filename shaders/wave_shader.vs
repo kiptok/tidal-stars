@@ -18,16 +18,6 @@ float random (vec2 st) {
   return fract(sin(dot(st.xy, vec2(12.9898,78.233)))*43758.5453123);
 }
 
-float easeInOutCirc (float x) {
-	return x < 0.5
-  	? (1 - sqrt(1 - pow(2 * x, 2))) / 2
-  	: (sqrt(1 - pow(-2 * x + 2, 2)) + 1) / 2;
-}
-
-float easeInOutCubic (float x) {
-	return x < 0.5 ? 4 * x * x * x : 1 - pow(-2 * x + 2, 3) / 2;
-}
-
 vec4 effect(vec4 color, Image texture, vec2 tc, vec2 st) {
 	st -= offset;
 	st += wavePosition;

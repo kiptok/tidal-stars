@@ -88,10 +88,10 @@ function Wave:setVariables(f, t, w)
 	-- ripple - small wave motions
 	for i = 1, 4 do -- ripple.x[i] = sin(st.y*[1]*2.*PI+[2]+time*[3])*[4]*cos(time*[5]+[6])
 		self.vars[2][1][i] = {}
-		self.vars[2][1][i][1] = math.random(2)+2
+		self.vars[2][1][i][1] = math.random()+0.5
 		self.vars[2][1][i][2] = math.random()*math.pi*2
 		self.vars[2][1][i][3] = math.random()*0.1+0.01
-		self.vars[2][1][i][4] = 0.005
+		self.vars[2][1][i][4] = 0.002
 		self.vars[2][1][i][5] = math.random()*0.5+0.25
 		self.vars[2][1][i][6] = math.random()*math.pi*2
 	end

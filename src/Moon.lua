@@ -8,6 +8,7 @@ function Moon:init(params, colors)
 	self.period = params.period -- time to pass through all moon phases
 	self.accel = params.acceleration
 	self.radius = params.radius -- moon radius
+	self.inertia = params.inertia -- slowdown
 	self.topSpeed = params.topSpeed -- fastest phase change
 	self.colors = colors
 	self.day = self.period * INITIAL_PHASE
@@ -31,20 +32,21 @@ function Moon:update(dt)
 		self.dp = math.min(self.dp+self.accel, self.topSpeed)
 	elseif love.keyboard.isDown('d') or love.keyboard.isDown('right') then
 		self.dp = math.max(self.dp-self.accel, -self.topSpeed)
-	elseif self.dp < 0 then
-		self.dp = math.min(self.dp+self.accel, 0)
-	elseif self.dp > 0 then
-		self.dp = math.max(self.dp-self.accel, 0)
+	else
+		self.dp = lerp(self.dp, 0, self.inertia)
 	end
+
+	self.day = (self.day + self.dp * dt) % self.period
+	self.phase = self.day / self.period
 
 	-- make speed limits?
 
 	-- maybe let these ramp up/down
-	self:updatePhase(dt)
+	-- self:updatePhase(dt)
 end
 
 function Moon:make() -- initialize points; don't need this now?
-	local white = {1, 1, 1, 1}
+	local white = {{1, 1, 1, 1}}
 	self.points[0] = {}
 	self.points[0][0] = Point(self.x, self.y, white)
 	for j = 1, self.radius do -- middle row of points
@@ -73,8 +75,6 @@ function Moon:shine() -- cast light on the playing ocean?
 end
 
 function Moon:updatePhase(dt)
-	self.day = (self.day + self.dp * dt) % self.period
-	self.phase = self.day / self.period
 	local left = (self.phase - 0.25) % 1 -- gradient end positions
 	-- local right = (self.phase + 0.25) % 1
 	local x = self.radius
@@ -96,10 +96,6 @@ function Moon:updatePhase(dt)
 			pct = (pct + increment) % 1
 		end
 	end
-end
-
-function Moon:getPhase()
-	return self.phase
 end
 
 function Moon:render()

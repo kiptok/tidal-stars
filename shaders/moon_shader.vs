@@ -41,16 +41,16 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 st) {
 
 	float phase = mod(st.x / 4. + moonPhase, 1.); // phase of each point
 
-	phase = phase - smoothstep(0.9, 1.1, phase);
-	phase = phase + smoothstep(0.1, -0.1, phase);
+	// terrain map
+	float scale 	= 10;
+	float peaks 	= smoothstep(0.5, 0.95, noise(vec2(mod(st.x*scale+phase*scale*4.,scale*4.), st.y*wh.y*scale)));
+	float valleys = smoothstep(0.5, 0.05, noise(vec2(mod(st.x*scale+phase*scale*4.,scale*4.), st.y*wh.y*scale)));
+
+	phase *= smoothstep(0.15, 0.35, phase);
+	phase *= smoothstep(0.85, 0.65, phase);
+	// phase = phase + smoothstep(0.35, 0.15, phase);
 
 	color = mix(color1, color2, phase);
-
-	// terrain map
-	float scale = 10;
-	float peaks = smoothstep(0.5, 0.6, noise(mod(st*scale+phase*scale*4.,scale*4.)));
-	float valleys = smoothstep(0.5, 0.6, noise(mod(st*scale+phase*scale*4.,scale*4.)+scale*4.));
-
 	color.rgb = (color.rgb+peaks-valleys)/3.+1./3.;
 
 	return color;
