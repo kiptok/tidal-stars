@@ -37,8 +37,15 @@ require 'src/Wave'
 -- }
 
 -- gSounds['star'] = {
--- 	[1] = love.audio.newSource('sounds/star1.wav'),
--- 	[2] = love.audio.newSource('sounds/star2.wav'),
--- 	[3] = love.audio.newSource('sounds/star3.wav'),
--- 	[4] = love.audio.newSource('sounds/star4.wav')
+-- 	[1] = love.audio.newSource('sounds/star1.wav', 'static'),
+-- 	[2] = love.audio.newSource('sounds/star2.wav', 'static'),
+-- 	[3] = love.audio.newSource('sounds/star3.wav', 'static'),
+-- 	[4] = love.audio.newSource('sounds/star4.wav', 'static')
+-- }
+
+-- starSounds = {
+-- 	[1] = 'sounds/star1.wav',
+-- 	[2] = 'sounds/star2.wav',
+-- 	[3] = 'sounds/star3.wav',
+-- 	[4] = 'sounds/star4.wav'
 -- }

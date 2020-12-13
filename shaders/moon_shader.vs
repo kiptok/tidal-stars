@@ -77,19 +77,19 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 st) {
 
 	float terrain;
 	terrain += repeatNoise(vec2(st.x*scale, st.y*wh.y*scale),scale*2.)*.5+.5;
-	terrain += repeatNoise(vec2(st.x*2.*scale, st.y*wh.y*2.*scale),scale*4.)*.25+.25;
-	terrain += repeatNoise(vec2(st.x*4.*scale, st.y*wh.y*4.*scale),scale*8.)*.125+.125;
-	terrain += repeatNoise(vec2(st.x*8.*scale, st.y*wh.y*8.*scale),scale*16.)*.0625+.0625;
+	terrain += repeatNoise(vec2(st.x*2.*scale, st.y*wh.y*2.*scale)+scale*3.,scale*4.)*.25+.25;
+	terrain += repeatNoise(vec2(st.x*4.*scale, st.y*wh.y*4.*scale)+scale*9.,scale*8.)*.125+.125;
+	terrain += repeatNoise(vec2(st.x*8.*scale, st.y*wh.y*8.*scale)+scale*21.,scale*16.)*.0625+.0625;
 
 	float peaks 	= smoothstep(0.875, 2., terrain);
 	float valleys = smoothstep(0.875, -.25, terrain);
 
-	float shadow = smoothstep(0.175, 0.325, phase) - smoothstep(0.675, 0.825, phase);
-	shadow = smoothstep(0.2, 0.3, phase) - smoothstep(0.7, 0.8, phase);
+	// float shadow = smoothstep(0.175, 0.325, phase) - smoothstep(0.675, 0.825, phase);
+	// shadow = smoothstep(0.2, 0.3, phase) - smoothstep(0.7, 0.8, phase);
 	// phase *= smoothstep(0.175, 0.325, phase);
 	// phase *= smoothstep(0.825, 0.675, phase);
 	// phase *= shadow;
-	shadow = quinticStep(0.1875, 0.3125, phase) - quinticStep(0.6875, 0.8125, phase);
+	float shadow = quinticStep(0.1875, 0.3125, phase) - quinticStep(0.6875, 0.8125, phase);
 
 	vec4 light = color1;
 	vec4 dark = color2;

@@ -2,27 +2,25 @@ Star = Class{}
 
 function Star:init(params, color)
 	-- self.category = 
-	self.class = 'A' -- star class
-  self.note = 0 -- sound that plays
+	self.class = params.class or 'A' -- star class
+  self.note = params.note or {} -- note that plays -- table of pitch/dur/vel ?
+	self.voice = love.audio.newSource(params.sound, 'static') -- sound
 	self.x = params.x -- center of points (relative to the wave)
 	self.y = params.y
 	self.radius = params.radius -- maximum radius of points from center
-	self.numPoints = params.numPoint -- # of points
 	self.color = color -- principal color
 	self.dcolorMax = 0.05 -- some # indicating how much the color can change
 	self.dcolor = self.dcolorMax * 0.4
 	self.count = math.random() * 0.1
-	self.period = 0.1 + math.random() * 0.1
+	self.period = 0.1 + math.random() * 0.1 -- relate this to dur?
 	self.points = {} -- collection of points that aggregate around the center
 	self.space = {}
 	self.collected = false
-	self.next = false
+	self.next = params.next or false
 	self.onScreen = false
 	self.alive = true
-	-- for k = 1, self.numPoints do
-	-- 	table.insert(self.points, Point(0, 0, self.color))
-	-- end
-	self:make()
+	self.voice:setPosition(self.x, self.y, 0)
+	self:make(params.cycles)
 end
 
 function Star:update(dt)
@@ -40,7 +38,7 @@ function Star:update(dt)
 end
 
 -- set up color and point table
-function Star:make()
+function Star:make(c)
 	for i = 1, 3 do -- initialize star color
 		self.color[i] = self.color[i] + (math.random()-0.5) * 2 * self.dcolorMax
 	end
@@ -52,6 +50,13 @@ function Star:make()
 			self.points[i][j] = false
 		end
 	end
+
+	local cycles = c
+	for k = 1, cycles do
+		local choice = math.random(6) -- not just random
+		self:drawCycle(choice)
+	end
+	-- make note
 end
 
 -- add one cycle of points to the star; maybe rapidly switch between these per step?
@@ -119,6 +124,11 @@ function Star:drawCycle(choice) -- change this to a table of functions?
 			self:addPoint(r, theta, 'polar')
 		end
 	end
+end
+
+function Star:play()
+	self.voice:setPitch(2^(self.note/12))
+	self.voice:play()
 end
 
 -- slightly adjust colors of points within range

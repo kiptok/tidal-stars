@@ -9,10 +9,10 @@ function OceanMaker.generate(l, m, mc, bc)
 	local radius = moonParams.radius
 	local colors = bc or false
 	local difference
-	local stars = {}
 
 	-- difficulty-adjustable settings
-	local numStars = level * 40
+	local numStars = level*40
+	local numBars = level*4
 	local minRGBDiff = 1.6
 
 	-- set ocean colors randomly with minimum difference
@@ -28,41 +28,98 @@ function OceanMaker.generate(l, m, mc, bc)
 	difference = colorDifference(colors[1], colors[2])
 
 	-- make wave
-	waveParams = {
-		width = level * FRAME_WIDTH * 10,
-		height = FRAME_HEIGHT
+	local waveParams = {
+		width = waveWidth,
+		height = waveHeight
 	}
 
-	-- make stars with random placement, size, density, interpolated color
-	for i = 1, numStars do
-		local starParams = {
+	-- make song
+	local key = {math.random(12)-12, 'major'} -- just major for now
+	local scale = {}
+	for k, step in pairs(SCALES[key[2]]) do
+		scale[k] = step + key[1]
+	end
+
+	-- make first bar of stars with random placement, size, density, interpolated color
+	local bar = {}
+	local pitch, dur, vel
+	pitch = scale[1] -- always the tonic
+	dur = 1
+	vel = 1
+
+	local note = {['pitch'] = pitch, ['dur'] = dur, ['vel'] = vel} -- first note
+
+	local starParams = {
+		-- sound = starSounds[1],
 		x = math.random(waveWidth), -- x
 		y = math.random(waveHeight), -- y
 		radius = math.random(STAR_RADIUS_MIN, STAR_RADIUS_MAX), -- radius
-		numPoints = math.floor(math.random(radius*radius*0.125, radius*radius*0.5)) -- # of points
 		-- class = 
-		-- note = 
-		}
-		local starColor = {math.random(), math.random(), math.random(), 1} -- color
-		-- local starColor = lerpColor(colors[1], colors[2], math.random())
-		local star = Star(starParams, starColor)
+		cycles = math.random(12)+9, -- scale with or replace numPoints
+		note = note,
+		next = true
+	}
+	local starColor = {math.random(), math.random(), math.random(), 1} -- color
+	local star = Star(starParams, starColor)
+	table.insert(bar, star)
 
-		local cycles = math.random(12) + 9 -- scale with or replace numPoints
-		for k = 1, cycles do
-			local choice = math.random(6) -- not just random
-			star.drawCycle(choice)
+	local i = dur
+	while i < 4 do
+		-- pitch
+		local stepChoice = math.random()
+		local j = 0
+		local step = -7
+		while stepChoice > j do
+			j = j + STEPWEIGHTS[step]
+			step = step + 1
+		end
+		pitch = note['pitch'] + step
+
+		-- duration
+		local durChoice = math.random()
+		if durChoice < 0.25 then  -- adjust these values based on level etc.
+			dur = 2 -- 1/2 note
+		elseif durChoice < 0.75 then
+			dur = 1 -- 1/4 note
+		else
+			dur = 1/2 -- 1/8 note
+		end
+		if i+dur > 4 then
+			dur = 4-i -- make bar exactly 4 beats
 		end
 
-		table.insert(stars, Star(starParams, starColor))
+		-- velocity
+		-- local velChoice = math.random()
+		vel = math.random()*0.5+0.5 -- just do this for now
+		note = {['pitch'] = pitch, ['dur'] = dur, ['vel'] = vel}
+
+		starParams = {
+			-- sound = starSounds[1],
+			x = math.random(waveWidth), -- x
+			y = math.random(waveHeight), -- y
+			radius = math.random(STAR_RADIUS_MIN, STAR_RADIUS_MAX), -- radius
+			-- class = 
+			cycles = math.random(12)+9, -- scale with or replace numPoints
+			note = note,
+			next = true
+		}
+		starColor = {math.random(), math.random(), math.random(), 1} -- change this later
+		star = Star(starParams, starColor)
+		table.insert(bar, star)
+		i = i + dur
 	end
 
-	stars[math.random(numStars)].next = true
+	local songParams = {
+		numBars = numBars,
+		key = key,
+		scale = scale,
+		bar = bar
+	}
 
 	local moon = Moon(moonParams, colors)
 	local wave = Wave(waveParams, colors)
-	local song = Song()
-
-	local ocean = Ocean(moon, wave, stars, song)
+	local song = Song(songParams, colors)
+	local ocean = Ocean(moon, wave, song)
 
 	if state == 'reset' then
 		ocean.shifting[1] = true; -- shifting boolean
@@ -76,8 +133,6 @@ function OceanMaker.generate(l, m, mc, bc)
 	moon.ocean = ocean
 	wave.ocean = ocean
 	song.ocean = ocean
-
-
 
 	return ocean
 end

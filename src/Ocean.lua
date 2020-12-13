@@ -19,6 +19,14 @@ function Ocean:init(moon, wave, stars, song)
 end
 
 function Ocean:update(dt)
+	if love.keyboard.wasPressed('space') then
+		if state == 'play' then
+			state = 'playback'
+		elseif state == 'playback' then
+			state = 'play'
+		end
+	end
+
 	if state == 'play' then
 		self.time = self.time + dt
 		self.timer = self.timer + dt
@@ -61,13 +69,31 @@ function Ocean:update(dt)
 			state = 'win'
 		end
 	end
+	self.song:update(dt)
+
+	if state == 'playback' then
+		-- pause game
+		-- play song
+		-- show stars?
+		if love.keyboard.wasPressed('space') then
+	end
+	
 	if state == 'reset' then
 		state = 'play'
-		local moonParams = {radius = self.moon.radius, acceleration = self.moon.accel, period = self.moon.period, inertia = self.moon.inertia, topSpeed = self.moon.topSpeed}
+		local moonParams = {
+			radius = self.moon.radius,
+			acceleration = self.moon.accel,
+			period = self.moon.period,
+			inertia = self.moon.inertia,
+			topSpeed = self.moon.topSpeed
+		}
 		reset(moonParams, self.moon.colors, self.borderColors)
 	end
+	
 	if state == 'win' then -- enter win sequence
-
+		-- replay song
+		-- player can choose to go to next level
+		-- if love.keyboard.wasPressed('space')
 	end
 end
 

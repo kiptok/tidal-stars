@@ -27,7 +27,7 @@ float random (vec2 st) {
 
 vec2 random2(vec2 st){
   st = vec2( dot(st,vec2(127.1,311.7)), dot(st,vec2(269.5,183.3)) );
-  return -1.0 + 2.0*fract(sin(st)*43758.5453123+seed*9761.2035667);
+  return -1.0 + 2.0*fract(sin(st)*43758.5453123);
 }
 
 // Gradient Noise by Inigo Quilez - iq/2013
@@ -78,7 +78,7 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 st) {
   st += tide;
 
   float surface;
-  
+
 
   // st.x = (st.x + 0.12) / 0.24;
   // st.y = (st.y + 1.1) / 2.2; // how do i do this

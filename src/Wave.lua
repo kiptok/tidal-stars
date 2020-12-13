@@ -9,7 +9,6 @@ function Wave:init(params, colors)
 	self.x = 0 -- x position of wave on the left side
 	self.y = 0 -- y position of wave on the top side
 	self.theta = math.pi
-	self.time = 0
 	self.colors = colors
 	self.shader = love.graphics.newShader('shaders/wave_shader.vs')
 	-- self.view = {} -- % positions of left & right sides of the view?
@@ -21,7 +20,6 @@ function Wave:init(params, colors)
 end
 
 function Wave:update(dt) -- update the wave to follow the moon phase
-	self.time = self.time + dt
 	self:updateTide(dt)
 	self:flow()
 end
@@ -46,6 +44,7 @@ function Wave:updateTide(dt) -- update the tide
 	local tideVars = self.vars[1][1][1]
 	local tide = {0, 0}
 	local dtheta
+
 	-- for i = 1, 2 do
 	-- 	for k, tideVars in pairs(tidesVars[i]) do
 	-- 		tide[i] = tide[i] + math.sin(self.time*tideVars[1]+tideVars[2])*tideVars[3]
@@ -53,12 +52,10 @@ function Wave:updateTide(dt) -- update the tide
 	-- end
 
 	-- only doing 1 x tide for now
-	-- ok this is all wrong
-
 	dtheta = dt*force*tideVars[1]
 	self.theta = (self.theta+dtheta)%(math.pi*2)
 	tide[1] = math.sin(self.theta)
-	tide[1] = (tide[1]+1)*0.5 -- adjust to 0-1 range
+	tide[1] = (tide[1]+1)*0.5 -- adjustment to 0-1 range
 
 	self.tide = tide
 end
@@ -130,7 +127,7 @@ function Wave:render()
 	self.shader:send('ripX4', ripX[4][1], ripX[4][2], ripX[4][3], ripX[4][4], ripX[4][5], ripX[4][6])
 	self.shader:send('ripY1', ripY[1][1], ripY[1][2], ripY[1][3], ripY[1][4], ripY[1][5], ripY[1][6])
 	self.shader:send('ripY2', ripY[2][1], ripY[2][2], ripY[2][3], ripY[2][4], ripY[2][5], ripY[2][6])
-	self.shader:send('time', self.time)
+	self.shader:send('time', self.ocean.time)
 	self.shader:send('color1', self.colors[1])
 	self.shader:send('color2', self.colors[2])
 
