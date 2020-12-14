@@ -12,9 +12,7 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 st) {
 	st = st / love_ScreenSize.xy;
 
   float pct = smoothstep(0.0, 0.5, fract(st.x+time*0.04));
-  pct += smoothstep(1.0, 0.5, fract(st.x+time*0.04));
-
-	// st.x -= smoothstep(0.6, 0.8, st.x);
+  pct -= smoothstep(0.5, 1.0, fract(st.x+time*0.04));
 
 	color = mix(color1, color2, pct);
 	return color;

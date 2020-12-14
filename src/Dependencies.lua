@@ -43,9 +43,13 @@ require 'src/Wave'
 -- 	[4] = love.audio.newSource('sounds/star4.wav', 'static')
 -- }
 
--- starSounds = {
--- 	[1] = 'sounds/star1.wav',
--- 	[2] = 'sounds/star2.wav',
--- 	[3] = 'sounds/star3.wav',
--- 	[4] = 'sounds/star4.wav'
--- }
+starSounds = {
+	[1] = 'sounds/star1.wav',
+	[2] = 'sounds/star2.wav'
+	-- [3] = 'sounds/star3.wav',
+	-- [4] = 'sounds/star4.wav'
+	-- [1] = 'sounds/test1.wav', -- testing purposes
+	-- [2] = 'sounds/test2.wav',
+	-- [3] = 'sounds/test3.wav',
+	-- [4] = 'sounds/test4.wav'
+}

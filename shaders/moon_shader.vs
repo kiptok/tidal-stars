@@ -66,15 +66,6 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 st) {
 
 	// terrain map
 	float scale 	= 2.;
-	// float terrain = repeatNoise(vec2(mod(st.x*scale+phase*scale*4.,scale*4.), this makes the moon rotate
-	// 																 mod(st.y*wh.y*scale,scale*4.)),scale*4.)*.5+.5;
-	// terrain += 			repeatNoise(vec2(mod(st.x*2.*scale+phase*scale*8.,scale*8.),
-	// 																 mod(st.y*wh.y*2.*scale,scale*8.)),scale*8.)*.25+.25;
-	// terrain +=			repeatNoise(vec2(mod(st.x*4.*scale+phase*scale*16.,scale*16.),
-	// 																 mod(st.y*wh.y*4.*scale,scale*16.)),scale*16.)*.125+.125;
-	// terrain +=			repeatNoise(vec2(mod(st.x*8.*scale+phase*scale*32.,scale*32.),
-	// 																 mod(st.y*wh.y*8.*scale,scale*32.)),scale*32.)*.0625+.0625;
-
 	float terrain;
 	terrain += repeatNoise(vec2(st.x*scale, st.y*wh.y*scale),scale*2.)*.5+.5;
 	terrain += repeatNoise(vec2(st.x*2.*scale, st.y*wh.y*2.*scale)+scale*3.,scale*4.)*.25+.25;

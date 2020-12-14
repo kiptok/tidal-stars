@@ -1,17 +1,16 @@
 OceanMaker = Class{}
 
-function OceanMaker.generate(l, m, mc, bc)
+function OceanMaker.generate(l, m, mc, fc)
 	local level = l
 	local moonParams = m
 	local waveWidth = level * FRAME_WIDTH * 10
 	local waveHeight = FRAME_HEIGHT
 	local period = moonParams.period
 	local radius = moonParams.radius
-	local colors = bc or false
+	local colors = fc or false
 	local difference
 
 	-- difficulty-adjustable settings
-	local numStars = level*40
 	local numBars = level*4
 	local minRGBDiff = 1.6
 
@@ -26,12 +25,6 @@ function OceanMaker.generate(l, m, mc, bc)
 		end
 	end
 	difference = colorDifference(colors[1], colors[2])
-
-	-- make wave
-	local waveParams = {
-		width = waveWidth,
-		height = waveHeight
-	}
 
 	-- make song
 	local key = {math.random(12)-12, 'major'} -- just major for now
@@ -57,11 +50,14 @@ function OceanMaker.generate(l, m, mc, bc)
 		-- class = 
 		cycles = math.random(12)+9, -- scale with or replace numPoints
 		note = note,
+		sound = starSounds[math.random(2)], -- vary this later
+		attenuation = {waveWidth*0.05, waveWidth*0.175},
 		next = true
 	}
 	local starColor = {math.random(), math.random(), math.random(), 1} -- color
 	local star = Star(starParams, starColor)
 	table.insert(bar, star)
+	local lastNote = note
 
 	local i = dur
 	while i < 4 do
@@ -73,13 +69,13 @@ function OceanMaker.generate(l, m, mc, bc)
 			j = j + STEPWEIGHTS[step]
 			step = step + 1
 		end
-		pitch = note['pitch'] + step
+		pitch = lastNote['pitch'] + step
 
 		-- duration
 		local durChoice = math.random()
-		if durChoice < 0.25 then  -- adjust these values based on level etc.
+		if durChoice < 0.2 then  -- adjust these values based on level etc.
 			dur = 2 -- 1/2 note
-		elseif durChoice < 0.75 then
+		elseif durChoice < 0.4 then
 			dur = 1 -- 1/4 note
 		else
 			dur = 1/2 -- 1/8 note
@@ -101,11 +97,14 @@ function OceanMaker.generate(l, m, mc, bc)
 			-- class = 
 			cycles = math.random(12)+9, -- scale with or replace numPoints
 			note = note,
+			sound = starSounds[math.random(2)], -- vary this later
+			attenuation = {waveWidth*0.05, waveWidth*0.175},
 			next = true
 		}
 		starColor = {math.random(), math.random(), math.random(), 1} -- change this later
 		star = Star(starParams, starColor)
 		table.insert(bar, star)
+		lastNote = star.note
 		i = i + dur
 	end
 
@@ -114,6 +113,12 @@ function OceanMaker.generate(l, m, mc, bc)
 		key = key,
 		scale = scale,
 		bar = bar
+	}
+
+	-- make wave
+	local waveParams = {
+		width = waveWidth,
+		height = waveHeight
 	}
 
 	local moon = Moon(moonParams, colors)

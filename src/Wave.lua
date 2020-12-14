@@ -15,6 +15,8 @@ function Wave:init(params, colors)
 	-- self.line = {} -- the bounding line that separates the extreme colors
 	-- self.lineX = 0 -- screen position of wave
 	self.tide = {0, 0}
+	self.drift = (math.random()-0.5)*0.00005 -- elaborate on this later
+	self.direction = {(math.random(2)-1.5)*2, (math.random(2)-1.5)*2} -- direction of flow
 	self.vars = {}
 	self:setVariables()
 end
@@ -53,6 +55,8 @@ function Wave:updateTide(dt) -- update the tide
 
 	-- only doing 1 x tide for now
 	dtheta = dt*force*tideVars[1]
+	dtheta = dtheta + self.drift -- add some random motion
+
 	self.theta = (self.theta+dtheta)%(math.pi*2)
 	tide[1] = math.sin(self.theta)
 	tide[1] = (tide[1]+1)*0.5 -- adjustment to 0-1 range
@@ -61,7 +65,7 @@ function Wave:updateTide(dt) -- update the tide
 end
 
 function Wave:setVariables(f, t, w)
-	for i = 1, 2 do 
+	for i = 1, 3 do 
 		table.insert(self.vars, {})
 		for j = 1, 2 do
 			table.insert(self.vars[i], {})
@@ -85,21 +89,26 @@ function Wave:setVariables(f, t, w)
 	-- ripple - small wave motions
 	for i = 1, 4 do -- ripple.x[i] = sin(st.y*[1]*2.*PI+[2]+time*[3])*[4]*cos(time*[5]+[6])
 		self.vars[2][1][i] = {}
-		self.vars[2][1][i][1] = math.random()+0.5
+		self.vars[2][1][i][1] = math.random()+1.
 		self.vars[2][1][i][2] = math.random()*math.pi*2
-		self.vars[2][1][i][3] = math.random()*0.1+0.01
-		self.vars[2][1][i][4] = 0.002
+		self.vars[2][1][i][3] = (math.random()-0.5)*1.5
+		self.vars[2][1][i][4] = 0.05
 		self.vars[2][1][i][5] = math.random()*0.5+0.25
 		self.vars[2][1][i][6] = math.random()*math.pi*2
 	end
 	for i = 1, 2 do -- ripple.y[i] = sin(st.x*[1]*2.*PI+[2]+time*[3])*[4]*cos(time*[5]+[6])
 		self.vars[2][2][i] = {}
-		self.vars[2][2][i][1] = math.random(8)+2
+		self.vars[2][2][i][1] = math.random()+0.25
 		self.vars[2][2][i][2] = math.random()*math.pi*2
-		self.vars[2][2][i][3] = math.random()*0.02+0.01
-		self.vars[2][2][i][4] = 0.5
+		self.vars[2][2][i][3] = math.random()*0.05+0.01
+		self.vars[2][2][i][4] = 0.05
 		self.vars[2][2][i][5] = math.random()*0.5+0.25
 		self.vars[2][2][i][6] = math.random()*math.pi*2
+	end
+
+	for i = 1, 5 do
+		self.vars[3][1][i] = math.random()*0.9
+		self.vars[3][2][i] = self.vars[3][1][i] + math.random()*0.075 + 0.025
 	end
 end
 
@@ -111,6 +120,8 @@ function Wave:render()
 
 	local ripX = self.vars[2][1]
 	local ripY = self.vars[2][2]
+	local breakpoints = self.vars[3][1]
+	local breaks = self.vars[3][2]
 
 	love.graphics.setShader(self.shader) -- shader for the water
 	self.shader:send('waveResolution', {self.width, self.height})
@@ -127,7 +138,10 @@ function Wave:render()
 	self.shader:send('ripX4', ripX[4][1], ripX[4][2], ripX[4][3], ripX[4][4], ripX[4][5], ripX[4][6])
 	self.shader:send('ripY1', ripY[1][1], ripY[1][2], ripY[1][3], ripY[1][4], ripY[1][5], ripY[1][6])
 	self.shader:send('ripY2', ripY[2][1], ripY[2][2], ripY[2][3], ripY[2][4], ripY[2][5], ripY[2][6])
+	self.shader:send('breakpoints', breakpoints[1], breakpoints[2], breakpoints[3], breakpoints[4], breakpoints[5])
+	self.shader:send('breaks', breaks[1], breaks[2], breaks[3], breaks[4], breaks[5])
 	self.shader:send('time', self.ocean.time)
+	self.shader:send('flow', self.direction)
 	self.shader:send('color1', self.colors[1])
 	self.shader:send('color2', self.colors[2])
 

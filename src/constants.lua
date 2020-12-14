@@ -4,8 +4,8 @@ WINDOW_HEIGHT = 720
 VIRTUAL_WIDTH = 1280
 VIRTUAL_HEIGHT = 720
 
--- WINDOW_WIDTH, WINDOW_HEIGHT = love.window.getDimensions
--- VIRTUAL_WIDTH, VIRTUAL_HEIGHT = love.window.getDimensions
+-- WINDOW_WIDTH, WINDOW_HEIGHT = love.graphics.getDimensions()
+-- VIRTUAL_WIDTH, VIRTUAL_HEIGHT = love.graphics.getDimensions()
 
 FRAME_WIDTH = VIRTUAL_WIDTH*71/80
 FRAME_HEIGHT = VIRTUAL_HEIGHT*4/5

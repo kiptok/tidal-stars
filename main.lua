@@ -6,6 +6,7 @@ local level = 1
 function love.load()
   love.graphics.setDefaultFilter('nearest', 'nearest')
   love.window.setTitle('tidal stars')
+  -- love.window.setFullscreen(true)
 	math.randomseed(os.time())
 
 	push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
@@ -21,10 +22,10 @@ function love.load()
   -- gSounds['loop1']:play()
   
   t = 0
-  bpm = 120
+  bpm = 108
   spb = 60 / bpm
   duration = 180
-  state = 'play'
+  state = 'start'
   seed = math.random()
 
   ocean = OceanMaker.generate(level, LUNA)
@@ -40,6 +41,7 @@ function love.load()
   -- set cursor
   crosshair_cursor = love.mouse.getSystemCursor("crosshair")
   love.mouse.setCursor(crosshair_cursor)
+  -- gameX, gameY = 0, 0
   gameX, gameY = push:toGame(love.mouse.getPosition())
 end
 
@@ -91,8 +93,8 @@ function love.mouse.wasPressed(button)
     end
 end
 
-function reset(moonParams, moonColors, borderColors)
-  ocean = OceanMaker.generate(level, moonParams, moonColors, borderColors)
+function reset(moonParams, moonColors, frameColors)
+  ocean = OceanMaker.generate(level, moonParams, moonColors, frameColors)
 end
 
 -- helper functions

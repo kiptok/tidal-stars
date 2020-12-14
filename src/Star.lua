@@ -17,15 +17,16 @@ function Star:init(params, color)
 	self.space = {}
 	self.collected = false
 	self.next = params.next or false
-	self.onScreen = false
+	self.onScreen = true
+	self.nearby = false
 	self.alive = true
 	self.voice:setPosition(self.x, self.y, 0)
+	self.voice:setAttenuationDistances(params.attenuation[1], params.attenuation[2])
 	self:make(params.cycles)
 end
 
 function Star:update(dt)
 	self.count = self.count + dt
-
 	if self.count >= self.period then
 		self:twinkle()
 		self.count = self.count % self.period
@@ -34,7 +35,6 @@ function Star:update(dt)
 	if self.collected and self.alive then -- trail the player or something
 		self:die(dt)
 	end
-
 end
 
 -- set up color and point table
@@ -100,7 +100,8 @@ function Star:drawCycle(choice) -- change this to a table of functions?
 	elseif choice == 4 then -- butterfly
 		a = (math.random()-0.5)*self.radius
 		b = math.random(17)-9
-		c = self.radius-a
+		c = (math.random()-0.5)*self.radius
+		-- c = self.radius-a
 		d = math.random(17)-9
 		for l = 1, 360 do
 			theta = l*2*math.pi/360
@@ -108,10 +109,10 @@ function Star:drawCycle(choice) -- change this to a table of functions?
 			self:addPoint(r, theta, 'polar')	
 		end
 	elseif choice == 5 then -- band
-		a = (math.random()-0.5)*2*self.radius
-		b = (math.random()-0.5)*4
-		c = (math.random()-0.5*self.radius/math.abs(a))*2 -- let's try it
-		d = (math.random()-0.5*self.radius-math.abs(a*c))*2
+		a = math.random()*2
+		b = (math.random()-0.5)*self.radius
+		c = (math.random()-0.5)*self.radius
+		d = (math.random()-0.5)*(self.radius-math.abs(a*c))
 		for l = 1, 360 do
 			theta = l*2*math.pi/360
 			r = a*(b*(theta+offset[1])%c)+d
@@ -126,8 +127,16 @@ function Star:drawCycle(choice) -- change this to a table of functions?
 	end
 end
 
-function Star:play()
-	self.voice:setPitch(2^(self.note/12))
+function Star:play(relative)
+	self.voice:stop()
+	if relative then
+		self.voice:setRelative(true)
+		self.voice:setPosition(0, 0, 0)
+	else
+		self.voice:setRelative(false)
+		self.voice:setPosition(self.x, self.y, 0)
+	end
+	self.voice:setPitch(2^(self.note['pitch']/12))
 	self.voice:play()
 end
 

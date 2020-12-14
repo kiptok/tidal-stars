@@ -5,12 +5,15 @@ uniform vec2 wavePosition;
 uniform vec2 offset;
 uniform float time;
 uniform vec2 tide;
+uniform vec2 flow;
 uniform float ripX1[6];
 uniform float ripX2[6];
 uniform float ripX3[6];
 uniform float ripX4[6];
 uniform float ripY1[6];
 uniform float ripY2[6];
+uniform float breakpoints[5];
+uniform float breaks[5];
 
 #define PI 3.1415926535
 
@@ -44,6 +47,10 @@ float noise(vec2 st) {
     dot( random2(i + vec2(1.0,1.0) ), f - vec2(1.0,1.0) ), u.x), u.y);
 }
 
+// float noise2(vec2 st) {
+// 	vec
+// }
+
 // float octaveNoise(vec2 st, int octaves) {
 
 // }
@@ -60,11 +67,45 @@ float repeatNoise(vec2 st, float limit) {
 						 		 dot(random2(mod(i+vec2(1.0,1.0), limit)), f-vec2(1.0,1.0)), u.x), u.y);
 }
 
+float water(vec2 st, float scale, float turbulence) {
+  float surface;
+  vec2 uv = st+(noise(vec2(time, time+93847.)*0.05)-0.5)*flow*scale;
+
+  surface += noise(uv)*.5+.5;
+	surface += noise(uv*2.+scale*3.)*.25+.25;
+	surface += noise(uv*4.+scale*9.)*.125+.125;
+	surface += noise(uv*8.+scale*21.)*.0625+.0625;
+
+	surface += noise(-uv)*.5-.5;
+	surface += noise(-uv*2.-scale*3.)*.25-.25;
+	surface += noise(-uv*4.-scale*9.)*.125-.125;
+	surface += noise(-uv*8.-scale*21.)*.0625-.0625;
+
+	float swells = smoothstep(1.125, 1.75, surface);
+	float dips = smoothstep(0.625, 0, surface);
+	surface = (swells - dips)*turbulence;
+
+	return surface;
+}
+
 vec4 effect(vec4 color, Image texture, vec2 tc, vec2 st) {
+	// st -= offset;
+
+	// st += wavePosition;
+	// // st = mod(st, waveResolution);
+	// st = st / waveResolution; // something is wrong here where the screen changes when x resets to 0
+	// st.x *= waveResolution.x/waveResolution.y; // not sure
+
 	st -= offset;
-	st += wavePosition;
-	// st = mod(st, waveResolution);
-	st = st / waveResolution; // something is wrong here where the screen changes when x resets to 0
+	st = st / waveResolution;
+	st += tide;
+	st.x *= waveResolution.x/waveResolution.y;
+	st += wavePosition/waveResolution;
+
+  // st.x = (st.x + 0.12) / 0.24;
+  // st.y = (st.y + 1.1) / 2.2; // how do i do this
+
+  st += water(st, 2., 0.5);
 
 	vec2 ripple;
 	ripple.x += sin(st.y*ripX1[0]*2.*PI+ripX1[1]+time*ripX1[2])*ripX1[3]*cos(time*ripX1[4]+ripX1[5]);
@@ -75,46 +116,54 @@ vec4 effect(vec4 color, Image texture, vec2 tc, vec2 st) {
 	ripple.y += sin(st.x*ripY2[0]*2.*PI+ripY2[1]+time*ripY2[2])*ripY2[3]*cos(time*ripY2[4]+ripY2[5]);
 
 	st += ripple;
-  st += tide;
-
-  float surface;
-
-
-  // st.x = (st.x + 0.12) / 0.24;
-  // st.y = (st.y + 1.1) / 2.2; // how do i do this
+  // st += tide;
 
   float stepscale = 0.4;
   st = fract(st);
 
   // st.x = st.x - smoothstep(0.)
 
-	st.x = st.x - smoothstep(0.990, 1.01, st.x);
-	st.x = st.x + smoothstep(0.990, 1.01, 1.-st.x);
-	st.x = st.x - smoothstep(0.900, 1.000, st.x) * stepscale;
-	st.x = st.x + smoothstep(0.900, 1.000, 1.-st.x) * stepscale;
-	st.x = st.x - smoothstep(0.800, 0.900, st.x) * stepscale;
-	st.x = st.x + smoothstep(0.800, 0.900, 1.-st.x) * stepscale;
-	st.x = st.x - smoothstep(0.700, 0.800, st.x) * stepscale;
-	st.x = st.x + smoothstep(0.700, 0.800, 1.-st.x) * stepscale;
-	st.x = st.x - smoothstep(0.600, 0.700, st.x) * stepscale;
-	st.x = st.x + smoothstep(0.600, 0.700, 1.-st.x) * stepscale;
-	st.x = st.x - smoothstep(0.500, 0.600, st.x) * stepscale;
-	st.x = st.x + smoothstep(0.500, 0.600, 1.-st.x) * stepscale;
-	st.x = st.x - smoothstep(0.400, 0.500, st.x) * stepscale;
-	st.x = st.x + smoothstep(0.400, 0.500, 1.-st.x) * stepscale;
-	st.x = st.x - smoothstep(0.300, 0.400, st.x) * stepscale;
-	st.x = st.x + smoothstep(0.300, 0.400, 1.-st.x) * stepscale;
-	st.x = st.x - smoothstep(0.200, 0.300, st.x) * stepscale;
-	st.x = st.x + smoothstep(0.200, 0.300, 1.-st.x) * stepscale;
-	st.x = st.x - smoothstep(0.100, 0.200, st.x) * stepscale;
-	st.x = st.x + smoothstep(0.100, 0.200, 1.-st.x) * stepscale;
-	st.x = st.x - smoothstep(0.000, 0.100, st.x) * stepscale;
-	st.x = st.x + smoothstep(0.000, 0.100, 1.-st.x) * stepscale;
+	st.x = st.x - smoothstep(0.99, 1.01, st.x);
+	st.x = st.x + smoothstep(0.99, 1.01, 1.-st.x);
+	// st.x = st.x - smoothstep(0.900, 1.000, st.x) * stepscale;
+	// st.x = st.x + smoothstep(0.900, 1.000, 1.-st.x) * stepscale;
+	// st.x = st.x - smoothstep(0.800, 0.900, st.x) * stepscale;
+	// st.x = st.x + smoothstep(0.800, 0.900, 1.-st.x) * stepscale;
+	// // st.x = st.x - smoothstep(0.700, 0.800, st.x) * stepscale;
+	// // st.x = st.x + smoothstep(0.700, 0.800, 1.-st.x) * stepscale;
+	// st.x = st.x - smoothstep(0.600, 0.700, st.x) * stepscale;
+	// st.x = st.x + smoothstep(0.600, 0.700, 1.-st.x) * stepscale;
+	// // st.x = st.x - smoothstep(0.500, 0.600, st.x) * stepscale;
+	// // st.x = st.x + smoothstep(0.500, 0.600, 1.-st.x) * stepscale;
+	// st.x = st.x - smoothstep(0.400, 0.500, st.x) * stepscale;
+	// st.x = st.x + smoothstep(0.400, 0.500, 1.-st.x) * stepscale;
+	// // st.x = st.x - smoothstep(0.300, 0.400, st.x) * stepscale;
+	// // st.x = st.x + smoothstep(0.300, 0.400, 1.-st.x) * stepscale;
+	// st.x = st.x - smoothstep(0.200, 0.300, st.x) * stepscale;
+	// st.x = st.x + smoothstep(0.200, 0.300, 1.-st.x) * stepscale;
+	// st.x = st.x - smoothstep(0.100, 0.200, st.x) * stepscale;
+	// st.x = st.x + smoothstep(0.100, 0.200, 1.-st.x) * stepscale;
+	// st.x = st.x - smoothstep(0.000, 0.100, st.x) * stepscale;
+	// st.x = st.x + smoothstep(0.000, 0.100, 1.-st.x) * stepscale;
+	
+	st.x = st.x - smoothstep(breakpoints[0], breaks[0], st.x) * stepscale;
+	st.x = st.x + smoothstep(breakpoints[0], breaks[0], st.x) * stepscale;
+	st.x = st.x - smoothstep(breakpoints[1], breaks[1], st.x) * stepscale;
+	st.x = st.x + smoothstep(breakpoints[1], breaks[1], st.x) * stepscale;
+	st.x = st.x - smoothstep(breakpoints[2], breaks[2], st.x) * stepscale;
+	st.x = st.x + smoothstep(breakpoints[2], breaks[2], st.x) * stepscale;
+	st.x = st.x - smoothstep(breakpoints[3], breaks[3], st.x) * stepscale;
+	st.x = st.x + smoothstep(breakpoints[3], breaks[3], st.x) * stepscale;
+	st.x = st.x - smoothstep(breakpoints[4], breaks[4], st.x) * stepscale;
+	st.x = st.x + smoothstep(breakpoints[4], breaks[4], st.x) * stepscale;
+
 
 	st.y = st.y - smoothstep(0.75, 1.25, st.y);
 	st.y = st.y + smoothstep(0.75, 1.25, 1.-st.y);
 
 	float pct = st.x*st.y;
 	color = mix(color1, color2, pct);
+	// color = mix(color, vec4(1.), swells);
+	// color = mix(color, vec4(vec3(0.),1.), dips);
 	return color;
 }
