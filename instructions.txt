@@ -1,5 +1,6 @@
 instructions
 
-spacebar - phase towards mouse
+ad/arrow keys - change phase
 click - collect
+space - playback
 r - reset
