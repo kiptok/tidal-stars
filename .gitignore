@@ -47,3 +47,4 @@ luac.out
 release/
 *.toml
 notes.txt
+*.asd
