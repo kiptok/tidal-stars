@@ -34,7 +34,10 @@ function Ocean:update(dt)
 		end
 	end
 
-	local toMoon = math.sqrt((gameX-self.moon.x)^2+(gameY-self.moon.y)^2)
+	local toMoon = 0
+	if gameX and gameY then
+		toMoon = math.sqrt((gameX-self.moon.x)^2+(gameY-self.moon.y)^2)
+	end
 	if toMoon <= self.moon.radius and love.mouse.wasPressed(1) then
 		state = 'playback'
 		self.song:restart()
@@ -80,10 +83,12 @@ function Ocean:update(dt)
 			end
 			if star.x + star.radius >= self.wave.x and star.x - star.radius < self.wave.x + self.width then
 				if star.next and not star.collected then -- star collection
-					if gameX < self.x + star.x - self.wave.x + star.radius and gameX > self.x + star.x - self.wave.x - star.radius then
-						if gameY < self.y + star.y + star.radius and gameY > self.y + star.y - star.radius then
-							if love.mouse.wasPressed(1) then -- successful shot
-								self:collect(star)
+					if gameX and gameY then
+						if gameX < self.x + star.x - self.wave.x + star.radius and gameX > self.x + star.x - self.wave.x - star.radius then
+							if gameY < self.y + star.y + star.radius and gameY > self.y + star.y - star.radius then
+								if love.mouse.wasPressed(1) then -- successful shot
+									self:collect(star)
+								end
 							end
 						end
 					end
