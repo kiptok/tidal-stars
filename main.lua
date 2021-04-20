@@ -41,8 +41,10 @@ function love.load()
   -- set cursor
   crosshair_cursor = love.mouse.getSystemCursor("crosshair")
   love.mouse.setCursor(crosshair_cursor)
-  -- gameX, gameY = 0, 0
-  gameX, gameY = push:toGame(love.mouse.getPosition())
+  gameX, gameY = 0, 0
+  if love.mouse.getPosition() then
+    gameX, gameY = push:toGame(love.mouse.getPosition())
+  end
 end
 
 function love.resize(w, h)
@@ -57,7 +59,10 @@ function love.update(dt)
   love.keyboard.keysPressed = {}
   love.mouse.buttonsPressed = {}
 
-  gameX, gameY = push:toGame(love.mouse.getPosition())
+  gameX, gameY = 0, 0
+  if love.mouse.getPosition() then
+    gameX, gameY = push:toGame(love.mouse.getPosition())
+  end
 end
 
 function love.draw()
